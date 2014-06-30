@@ -10,15 +10,73 @@ public class MainFrame extends JFrame
 {
 	public MainFrame()
 	{
+		this.initGui();
+	}
+
+	private void initGui()
+	{
+		// Configuro il Frame
+		this.initGui_ConfigFrame();
+
+		// Creo la MenuBar
+		this.initGui_MenuBar();
+	}
+
+	private void initGui_ConfigFrame()
+	{
 		super.setTitle("Ortas Manager");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		super.setSize(300, 200);
-		
+		super.setSize(300, 200);	
+	}
 
+	private void initGui_MenuBar()
+	{
 		// Creiamo la barra dei menu della finestra
 		JMenuBar menubar;
 		menubar = new JMenuBar();
+		
+		// Creo il Menu "Sistema"
+		this.initGui_MenuBar_Sistema(menubar);
+		// Creo il Menu "Ordini"
+		this.initGui_MenuBar_MenuOrdini(menubar);
+		// Creo il Menu "Magazzino"
+		this.initGui_MenuBar_MenuMagazzino(menubar);
+		// Creo il Menu "Prodotti"
+		this.initGui_MenuBar_MenuProdotti(menubar);
+		// Creo il Menu "Reports"			
+		this.initGui_MenuBar_MenuReports(menubar);
+
+		// Aggiungo il JMenuBar appena creato al JFrame
+		super.setJMenuBar(menubar);
+	}
+
+	private void initGui_MenuBar_Sistema(JMenuBar menubar)
+	{
+		// Creo il menu "Sistema"
+		JMenu menu_sistema;
+
+		menu_sistema = new JMenu("Sistema");
+		menu_sistema.setMnemonic(KeyEvent.VK_S);
+
+		menubar.add(menu_sistema);
+
+		// Creo la voce "Esci" del menu "Sistema"
+		JMenuItem menuitem_sistema_esci;
+		menuitem_sistema_esci = new JMenuItem("Esci", KeyEvent.VK_E);
+
+		menu_sistema.add(menuitem_sistema_esci);
+
+
+		// Creo la voce "LogOut" del menu Sistema
+		JMenuItem menuitem_sistema_logout;
+		menuitem_sistema_logout = new JMenuItem("LogOut", KeyEvent.VK_L);
+
+		menu_sistema.add(menuitem_sistema_logout);
+
+	}
 	
+	private void initGui_MenuBar_MenuOrdini(JMenuBar menubar)
+	{
 		// Credo il menu "Ordini"
 		JMenu menu_ordini;
 		
@@ -26,28 +84,87 @@ public class MainFrame extends JFrame
 		menu_ordini.setMnemonic(KeyEvent.VK_O);
 
 		menubar.add(menu_ordini);
+  
+		// Creo la voce "Cerca" del menu "Ordini"
+		JMenuItem menuitem_ordini_cerca;
+		menuitem_ordini_cerca = new JMenuItem("Cerca", KeyEvent.VK_C);
 
+		menu_ordini.add(menuitem_ordini_cerca); 
+	
+		// Creo la voce "Nuovo" del menu "Ordini"
 		JMenuItem menuitem_ordini_nuovo;
 		menuitem_ordini_nuovo = new JMenuItem("Nuovo", KeyEvent.VK_N);
 
 		menu_ordini.add(menuitem_ordini_nuovo);
+	}
 
+	private void initGui_MenuBar_MenuMagazzino(JMenuBar menubar)
+	{
 		// Creo il menu "Magazzino"
 		JMenu menu_magazzino;
+		
+		menu_magazzino = new JMenu("Magazzino");
+		menu_magazzino.setMnemonic(KeyEvent.VK_M);
 
+		menubar.add(menu_magazzino);
+		
+		// Creo la voce "Cerca" del menu "Magazzino"
+		JMenuItem menuitem_magazzino_cerca;
+		menuitem_magazzino_cerca = new JMenuItem("Cerca", KeyEvent.VK_C);
+
+		menu_magazzino.add(menuitem_magazzino_cerca);
+
+		// Creo la voce "Movimentazioni" del menu "Magazzino"
+		JMenuItem menuitem_magazzino_movimentazioni;
+		menuitem_magazzino_movimentazioni = new JMenuItem("Movimentazioni", KeyEvent.VK_M);
+
+		menu_magazzino.add(menuitem_magazzino_movimentazioni);
+
+		// Creo la voce "Carica" del menu "Magazzino	
+		JMenuItem menuitem_magazzino_carica;
+		menuitem_magazzino_carica = new JMenuItem("Carica", KeyEvent.VK_A);
+
+		menu_magazzino.add(menuitem_magazzino_carica);
+	}
+
+	private void initGui_MenuBar_MenuProdotti(JMenuBar menubar)
+	{
 		// Creo il menu "Prodotti"
 		JMenu menu_prodotti;
-		
+
+		menu_prodotti = new JMenu("Prodotti");
+		menu_prodotti.setMnemonic(KeyEvent.VK_P);
+
+		menubar.add(menu_prodotti);
+
+		// Creo la voce "Cerca" del menu "Prodotti"
+		JMenuItem menuitem_prodotti_cerca;
+		menuitem_prodotti_cerca = new JMenuItem("Cerca", KeyEvent.VK_C);
+
+		menu_prodotti.add(menuitem_prodotti_cerca);
+
+		// Creo la voce "Nuovo" del menu "Prodotti"
+		JMenuItem menuitem_prodotti_nuovo;
+		menuitem_prodotti_nuovo = new JMenuItem("Nuovo", KeyEvent.VK_N);
+
+		menu_prodotti.add(menuitem_prodotti_nuovo);
+
+	}
+
+	private void initGui_MenuBar_MenuReports(JMenuBar menubar)
+	{
 		// Creo il menu "Reports"
 		JMenu menu_reports;
 
+		menu_reports = new JMenu("Reports");
+		menu_reports.setMnemonic(KeyEvent.VK_R);
 
-		// Aggiungo il JMenuBar appena creato al JFrame
-		super.setJMenuBar(menubar);
+		menubar.add(menu_reports);
 
-
-		super.setVisible(true);
 	}
-
-	
+//set foldmethod=syntax
+//set foldenable
+//syn region foldBraces start=/{/ end=/}/ transparent fold
 }
+
+
