@@ -1,2 +1,4 @@
-*.class     # i file compilati di java
-*.java.swp  # i file generati da gvim durante la loro compilazione nell'editor
+*.class
+*.java.swp
+*.orig
+*~

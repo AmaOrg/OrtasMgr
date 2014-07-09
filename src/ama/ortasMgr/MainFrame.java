@@ -1,10 +1,17 @@
 package ama.ortasMgr;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+
+//import javax.swing.event.MenuListener;
+//import javax.swing.event.MenuEvent;
 
 public class MainFrame extends JFrame
 {
@@ -26,7 +33,7 @@ public class MainFrame extends JFrame
 	{
 		super.setTitle("Ortas Manager");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		super.setSize(300, 200);	
+		super.setSize(300, 200);
 	}
 
 	private void initGui_MenuBar()
@@ -57,6 +64,8 @@ public class MainFrame extends JFrame
 
 		menu_sistema = new JMenu("Sistema");
 		menu_sistema.setMnemonic(KeyEvent.VK_S);
+		//MenuBarListener mbl = new MenuBarListener();
+		//menu_sistema.addMenuListener(mbl);
 
 		menubar.add(menu_sistema);
 
@@ -66,6 +75,12 @@ public class MainFrame extends JFrame
 
 		menu_sistema.add(menuitem_sistema_esci);
 
+		//Sistema_Esci_MenuItemListener se = new 	Sistema_Esci_MenuItemListener();
+		//menuitem_sistema_esci.addItemListener(se);
+	
+		Sistema_Esci_ActionListener seal = new Sistema_Esci_ActionListener();
+		menuitem_sistema_esci.addActionListener(seal);
+	
 
 		// Creo la voce "LogOut" del menu Sistema
 		JMenuItem menuitem_sistema_logout;
@@ -165,6 +180,47 @@ public class MainFrame extends JFrame
 //set foldmethod=syntax
 //set foldenable
 //syn region foldBraces start=/{/ end=/}/ transparent fold
+/*
+	private class MenuBarListener implements MenuListener
+	{
+		public void menuSelected(MenuEvent e)
+		{
+			System.out.println("MS");
+		}
+		public void menuDeselected(MenuEvent e)
+		{
+			System.out.println("MD");
+		}
+		public void menuCanceled(MenuEvent e)
+		{
+			System.out.println("MC");
+		}
+	}
+*/
+/*
+
+	private class Sistema_Esci_MenuItemListener implements ItemListener
+	{
+		public void itemStateChanged(ItemEvent ie)
+		{
+			if(ie.getStateChange() == ItemEvent.SELECTED)
+			{
+				System.out.println("SELECTED");
+			}
+			else
+			{
+				System.out.println("ciao");
+			}
+		}
+	}
+*/
+
+	private class Sistema_Esci_ActionListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent ae)
+		{
+			
+			System.out.println("Action");		
+		}
+	}
 }
-
-
