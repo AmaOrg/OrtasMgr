@@ -9,9 +9,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-
-//import javax.swing.event.MenuListener;
-//import javax.swing.event.MenuEvent;
+import javax.swing.JOptionPane;
 
 public class MainFrame extends JFrame
 {
@@ -33,7 +31,7 @@ public class MainFrame extends JFrame
 	{
 		super.setTitle("Ortas Manager");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		super.setSize(300, 200);
+		super.setSize(500, 200);
 	}
 
 	private void initGui_MenuBar()
@@ -79,6 +77,7 @@ public class MainFrame extends JFrame
 		//menuitem_sistema_esci.addItemListener(se);
 	
 		Sistema_Esci_ActionListener seal = new Sistema_Esci_ActionListener();
+		seal.parent_frame = this;
 		menuitem_sistema_esci.addActionListener(seal);
 	
 
@@ -175,52 +174,85 @@ public class MainFrame extends JFrame
 		menu_reports.setMnemonic(KeyEvent.VK_R);
 
 		menubar.add(menu_reports);
-
 	}
-//set foldmethod=syntax
-//set foldenable
-//syn region foldBraces start=/{/ end=/}/ transparent fold
-/*
-	private class MenuBarListener implements MenuListener
-	{
-		public void menuSelected(MenuEvent e)
-		{
-			System.out.println("MS");
-		}
-		public void menuDeselected(MenuEvent e)
-		{
-			System.out.println("MD");
-		}
-		public void menuCanceled(MenuEvent e)
-		{
-			System.out.println("MC");
-		}
-	}
-*/
-/*
-
-	private class Sistema_Esci_MenuItemListener implements ItemListener
-	{
-		public void itemStateChanged(ItemEvent ie)
-		{
-			if(ie.getStateChange() == ItemEvent.SELECTED)
-			{
-				System.out.println("SELECTED");
-			}
-			else
-			{
-				System.out.println("ciao");
-			}
-		}
-	}
-*/
-
+	
 	private class Sistema_Esci_ActionListener implements ActionListener
 	{
-		public void actionPerformed(ActionEvent ae)
-		{
-			
-			System.out.println("Action");		
+		public JFrame parent_frame;
+
+		public void chiediConfermaUscita() {
+			//crea una finestra di dialogo composta dal titolo title,
+			//un pulsante di chiusura,
+			//un messaggio message, dei pulsanti dati da optionType, 
+			//il tipo di messaggio dato da messageType;
+			//public static int showConfirmDialog(	Component parentComponent,
+			//																			Object message,
+			//																			String title,
+			//																			int optionType,
+			//																			int messageType)
+			int n = JOptionPane.showConfirmDialog(this.parent_frame,
+																					 "Vuoi uscire dal programma?",
+																					 "Avviso",
+																					 JOptionPane.YES_NO_OPTION, 
+																					 JOptionPane.WARNING_MESSAGE);
+			if(n == JOptionPane.YES_OPTION) 
+			{
+				this.avviaChiusuraProgramma();
+			}
+			else if(n == JOptionPane.NO_OPTION) 
+			{
+				return;
+			}
+		}
+
+		public void avviaChiusuraProgramma() {
+			// Provo ad uscire dal programma con exit.
+			// Se exit fallisce 2 volte di seguito, forzo l'uscita con halt.
+			// Se anche halt fallisce, comunico all'utente l'impossibilità di uscire dal programma.
+
+			for(int c=0; c<2 ; c++ )
+			{
+				try
+				{
+					System.exit(0);
+					// Simulazione fallimento metodo exit
+					// SecurityException my_se = new SecurityException("faild exit number " + c);
+					// throw my_se; 
+				}
+				catch(SecurityException se)
+				{
+					try
+					{
+						if(c == 1)
+						{
+							Runtime.getRuntime().halt(0);
+							// Simulazione fallimento metodo halt
+							// SecurityException my_se = new SecurityException("faild exit number " + c);
+							// throw my_se; 
+						}
+					}
+					catch(SecurityException seh)
+					{
+						/*
+						crea una finestra di dialogo composta dal titolo title,
+						un pulsante di chiusura, il messaggio message, un pulsante OK,
+						il tipo del messaggio con messageType;
+						public static void showMessageDialog(Component parentComponent,
+																		 Object message,
+																		 String title, 
+																		 int messageType)*/
+						JOptionPane.showMessageDialog(this.parent_frame,
+																"Non è stato possibile completare la chiusura del programma", 
+																"ERRORE", 
+																JOptionPane.ERROR_MESSAGE);
+					}
+				}
+			}
+		}
+
+		public void actionPerformed(ActionEvent ae) {
+			this.chiediConfermaUscita();
 		}
 	}
 }
+
