@@ -2,3 +2,7 @@
 *.java.swp
 *.orig
 *~
+*.v11.suo
+db/OrtasMgr_ORM/OrtasMgr_ORM/bin/
+db/OrtasMgr_ORM/OrtasMgr_ORM/obj/
+*._ORMCustomToolReport.cs
