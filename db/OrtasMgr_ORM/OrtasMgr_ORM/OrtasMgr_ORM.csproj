@@ -54,6 +54,24 @@
       <LastGenOutput>OrtasMgr._ORMCustomToolReport.cs</LastGenOutput>
     </None>
   </ItemGroup>
+  <ItemGroup />
+  <ItemGroup Condition="Exists('OrtasMgr.orm')">
+    <None Include="OrtasMgr.DCIL.xml">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrtasMgr.orm</DependentUpon>
+      <ORMGenerator>ConceptualDBtoDCL</ORMGenerator>
+    </None>
+    <None Include="OrtasMgr.DDIL.xml">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrtasMgr.orm</DependentUpon>
+      <ORMGenerator>DCILtoDDIL</ORMGenerator>
+    </None>
+    <None Include="OrtasMgr.PostgreSQL.sql">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>OrtasMgr.orm</DependentUpon>
+      <ORMGenerator>DDILtoPostgreSQL</ORMGenerator>
+    </None>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
