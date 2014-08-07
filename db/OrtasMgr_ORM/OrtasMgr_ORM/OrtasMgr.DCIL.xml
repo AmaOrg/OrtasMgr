@@ -1,0 +1,400 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<dcl:schema name="OrtasMgr" xmlns:dcl="http://schemas.orm.net/DIL/DCIL" xmlns:dil="http://schemas.orm.net/DIL/DIL" xmlns:ddt="http://schemas.orm.net/DIL/DILDT" xmlns:dep="http://schemas.orm.net/DIL/DILEP" xmlns:dml="http://schemas.orm.net/DIL/DMIL" xmlns:ddl="http://schemas.orm.net/DIL/DDIL">
+	<dcl:domain name="GiacenzaMinimaProdotto">
+		<dcl:predefinedDataType name="INTEGER" />
+		<dcl:checkConstraint name="GiacenzaMinimaProdotto_Unsigned_Chk">
+			<dep:comparisonPredicate operator="greaterThanOrEquals">
+				<dep:valueKeyword />
+				<ddt:exactNumericLiteral value="0" />
+			</dep:comparisonPredicate>
+		</dcl:checkConstraint>
+	</dcl:domain>
+	<dcl:domain name="QuantitaProdottoOrdinato">
+		<dcl:predefinedDataType name="INTEGER" />
+		<dcl:checkConstraint name="QuantitaProdottoOrdinato_Unsigned_Chk">
+			<dep:comparisonPredicate operator="greaterThanOrEquals">
+				<dep:valueKeyword />
+				<ddt:exactNumericLiteral value="0" />
+			</dep:comparisonPredicate>
+		</dcl:checkConstraint>
+	</dcl:domain>
+	<dcl:domain name="QuantitaMovimentazioneMagazzino">
+		<dcl:predefinedDataType name="INTEGER" />
+		<dcl:checkConstraint name="QuantitaMovimentazioneMagazzino_Unsigned_Chk">
+			<dep:comparisonPredicate operator="greaterThanOrEquals">
+				<dep:valueKeyword />
+				<ddt:exactNumericLiteral value="0" />
+			</dep:comparisonPredicate>
+		</dcl:checkConstraint>
+	</dcl:domain>
+	<dcl:domain name="QuantitaLotto">
+		<dcl:predefinedDataType name="INTEGER" />
+		<dcl:checkConstraint name="QuantitaLotto_Unsigned_Chk">
+			<dep:comparisonPredicate operator="greaterThanOrEquals">
+				<dep:valueKeyword />
+				<ddt:exactNumericLiteral value="0" />
+			</dep:comparisonPredicate>
+		</dcl:checkConstraint>
+	</dcl:domain>
+	<dcl:table name="Cliente">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="nome" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Cliente_PK" isPrimary="true">
+			<dcl:columnRef name="nome" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Cliente_UC1" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Cliente_UC2" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="Prodotto">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="nome" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="giac_min" isNullable="false" isIdentity="false">
+			<dcl:domainRef name="GiacenzaMinimaProdotto" />
+		</dcl:column>
+		<dcl:column name="is_prod_int" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="BOOLEAN" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Prodotto_UC1" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Prodotto_UC2" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Prodotto_PK" isPrimary="true">
+			<dcl:columnRef name="nome" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="Spedizione">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="ldv" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="data" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="DATETIME" />
+		</dcl:column>
+		<dcl:column name="note" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Spedizione_UC" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Spedizione_PK" isPrimary="true">
+			<dcl:columnRef name="ldv" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="Ordine">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="data" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="DATETIME" />
+		</dcl:column>
+		<dcl:column name="cliente" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="tipo" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="stato" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Ordine_UC" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Ordine_PK" isPrimary="true">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:referenceConstraint name="Ordine_FK1" targetTable="Cliente">
+			<dcl:columnRef sourceName="cliente" targetName="nome" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="Ordine_FK2" targetTable="TipoOrdine">
+			<dcl:columnRef sourceName="tipo" targetName="label" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="Ordine_FK3" targetTable="StatoOrdine">
+			<dcl:columnRef sourceName="stato" targetName="label" />
+		</dcl:referenceConstraint>
+	</dcl:table>
+	<dcl:table name="StatoOrdine">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="label" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="descr" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="StatoOrdine_UC1" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="StatoOrdine_UC2" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="StatoOrdine_PK" isPrimary="true">
+			<dcl:columnRef name="label" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="OrdineProdotto">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="ordine" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="prodotto" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="qta" isNullable="false" isIdentity="false">
+			<dcl:domainRef name="QuantitaProdottoOrdinato" />
+		</dcl:column>
+		<dcl:column name="stato" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="OrdineProdotto_PK" isPrimary="true">
+			<dcl:columnRef name="ordine" />
+			<dcl:columnRef name="prodotto" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="OrdineProdotto_UC" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:referenceConstraint name="OrdineProdotto_FK1" targetTable="Ordine">
+			<dcl:columnRef sourceName="ordine" targetName="cod" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="OrdineProdotto_FK2" targetTable="Prodotto">
+			<dcl:columnRef sourceName="prodotto" targetName="nome" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="OrdineProdotto_FK3" targetTable="StatoOrdineProdotto">
+			<dcl:columnRef sourceName="stato" targetName="label" />
+		</dcl:referenceConstraint>
+	</dcl:table>
+	<dcl:table name="StatoOrdineProdotto">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="label" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="descr" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="StatoOrdineProdotto_UC1" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="StatoOrdineProdotto_UC2" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="StatoOrdineProdotto_PK" isPrimary="true">
+			<dcl:columnRef name="label" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="TipoOrdine">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="label" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="descr" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="TipoOrdine_UC1" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="TipoOrdine_UC2" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="TipoOrdine_PK" isPrimary="true">
+			<dcl:columnRef name="label" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="Magazzino">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="nome" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Magazzino_PK" isPrimary="true">
+			<dcl:columnRef name="nome" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Magazzino_UC1" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Magazzino_UC2" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="TipoMovimentazioneMagazzino">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="label" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="is_entrata" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="BOOLEAN" />
+		</dcl:column>
+		<dcl:column name="descr" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="modifica_disp_lotto" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="BOOLEAN" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="TipoMovimentazioneMagazzino_UC1" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="TipoMovimentazioneMagazzino_UC2" isPrimary="false">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="TipoMovimentazioneMagazzino_PK" isPrimary="true">
+			<dcl:columnRef name="label" />
+		</dcl:uniquenessConstraint>
+	</dcl:table>
+	<dcl:table name="Lotto">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="cod" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="prodotto" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="data_scad" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="DATETIME" />
+		</dcl:column>
+		<dcl:column name="qta" isNullable="false" isIdentity="false">
+			<dcl:domainRef name="QuantitaLotto" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Lotto_UC" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="Lotto_PK" isPrimary="true">
+			<dcl:columnRef name="cod" />
+		</dcl:uniquenessConstraint>
+		<dcl:referenceConstraint name="Lotto_FK" targetTable="Prodotto">
+			<dcl:columnRef sourceName="prodotto" targetName="nome" />
+		</dcl:referenceConstraint>
+	</dcl:table>
+	<dcl:table name="MovimentazioneMagazzino">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="data" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="DATETIME" />
+		</dcl:column>
+		<dcl:column name="lotto" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="magazzino" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="tipo" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="qta" isNullable="false" isIdentity="false">
+			<dcl:domainRef name="QuantitaMovimentazioneMagazzino" />
+		</dcl:column>
+		<dcl:column name="note" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="MovimentazioneMagazzino_PK" isPrimary="true">
+			<dcl:columnRef name="lotto" />
+			<dcl:columnRef name="magazzino" />
+			<dcl:columnRef name="data" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="MovimentazioneMagazzino_UC" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:referenceConstraint name="MovimentazioneMagazzino_FK1" targetTable="Lotto">
+			<dcl:columnRef sourceName="lotto" targetName="cod" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="MovimentazioneMagazzino_FK2" targetTable="Magazzino">
+			<dcl:columnRef sourceName="magazzino" targetName="nome" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="MovimentazioneMagazzino_FK3" targetTable="TipoMovimentazioneMagazzino">
+			<dcl:columnRef sourceName="tipo" targetName="label" />
+		</dcl:referenceConstraint>
+	</dcl:table>
+	<dcl:table name="PrelievoMagazzino">
+		<dcl:column name="id" isNullable="false" isIdentity="true">
+			<dcl:predefinedDataType name="INTEGER" />
+		</dcl:column>
+		<dcl:column name="lotto" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="magazzino" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="data" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="DATETIME" />
+		</dcl:column>
+		<dcl:column name="ordine" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="prodotto" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:column name="spedizione" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="PrelievoMagazzino_UC" isPrimary="false">
+			<dcl:columnRef name="id" />
+		</dcl:uniquenessConstraint>
+		<dcl:uniquenessConstraint name="PrelievoMagazzino_PK" isPrimary="true">
+			<dcl:columnRef name="lotto" />
+			<dcl:columnRef name="magazzino" />
+			<dcl:columnRef name="data" />
+		</dcl:uniquenessConstraint>
+		<dcl:referenceConstraint name="PrelievoMagazzino_FK1" targetTable="OrdineProdotto">
+			<dcl:columnRef sourceName="ordine" targetName="ordine" />
+			<dcl:columnRef sourceName="prodotto" targetName="prodotto" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="PrelievoMagazzino_FK2" targetTable="Spedizione">
+			<dcl:columnRef sourceName="spedizione" targetName="ldv" />
+		</dcl:referenceConstraint>
+		<dcl:referenceConstraint name="PrelievoMagazzino_FK3" targetTable="MovimentazioneMagazzino">
+			<dcl:columnRef sourceName="lotto" targetName="lotto" />
+			<dcl:columnRef sourceName="magazzino" targetName="magazzino" />
+			<dcl:columnRef sourceName="data" targetName="data" />
+		</dcl:referenceConstraint>
+	</dcl:table>
+</dcl:schema>
