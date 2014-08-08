@@ -88,7 +88,7 @@ BEGIN
 	IF func_name IS NOT NULL THEN 
 		f_name := func_name;
 	END IF;
-	f_vals := '( ' || array_to_csv(arg_values) || ' )';
+	f_vals := '( ' || utils.array_to_csv(arg_values) || ' )';
 	func_args := xmlelement(name args, f_name, f_vals);
 	RETURN func_args;
 END;
@@ -111,7 +111,7 @@ BEGIN
 		END LOOP;
 	END IF;
 
-	err := get_error_data(d);
+	err := err_hand.get_error_data(d);
 	RETURN err;
 END;
 $BODY$
@@ -135,10 +135,10 @@ $BODY$
 DECLARE
 	func XML;
 	func_firm XML;
-	func_args XML;	
+	func_args XML;
 BEGIN
-	func_firm := get_error_where(func_name, arg_names);
-	func_args := get_error_args(func_name, arg_values);
+	func_firm := err_hand.get_error_where(func_name, arg_names);
+	func_args := err_hand.get_error_args(func_name, arg_values);
 	func := xmlconcat(func_firm, func_args);
 	RETURN func;
 END;
@@ -159,7 +159,7 @@ BEGIN
 		f_name := func_name;
 	END IF;
 	
-	f_args := '( ' || array_to_csv(arg_names) || ' )';
+	f_args := '( ' || utils.array_to_csv(arg_names) || ' )';
 	func_firm := xmlelement(name where, f_name, f_args);
 
 	RETURN func_firm;
@@ -173,7 +173,7 @@ $BODY$
 DECLARE
 	ret XML;
 BEGIN
-	ret := get_format(format, args);
+	ret := utils.get_format(format, args);
 	ret := xmlelement(name error_msg, ret);
 	RETURN ret;
 END;

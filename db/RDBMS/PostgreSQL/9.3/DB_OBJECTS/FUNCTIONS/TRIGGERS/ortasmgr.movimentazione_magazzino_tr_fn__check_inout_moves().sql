@@ -1,4 +1,7 @@
-CREATE FUNCTION movimentazione_magazzino_tr_fn__check_inout_moves() RETURNS TRIGGER
+CREATE OR REPLACE FUNCTION ortasmgr.movimentazione_magazzino_tr_fn__check_inout_moves() 
+RETURNS TRIGGER 
+--SET search_path TO ortasmgr, err_hand
+AS
 $BODY_FUNC_TR$
 DECLARE
 	-- == DESCRIPTION FUNCTION PARAMETERS ===============
@@ -12,7 +15,7 @@ DECLARE
 	func_name TEXT = 'movimentazione_magazzino_tr_fn__check_inout_moves';
 	
 	-- contiene i nomi ordinati dei parametri in ingresso della funzione
-	func_prms TEXT[] := ARRAY [];
+	func_prms TEXT[] := ARRAY []::TEXT[];
 	
 	-- == ERROR HANDLING VARS ===============
 	-- In questa sezione sono dichiarate tutte le variabili necessarie alla 
@@ -21,17 +24,20 @@ DECLARE
 	-- sezione in modo da rendere il codice meno "pensante" da leggere.
 	
 	-- contiene la rappresentazione in stringa degli argomenti della funzione
-	func_args TEXT[] := ARRAY [];
+	func_args TEXT[] := ARRAY []::TEXT[];
 	
 	-- Necessaria in caso di errore.
 	-- Contiene un xml con la firma della funzione e gli argomenti che hanno
 	-- generato l'errore.
-	func XML := get_error_func(func_name, func_prms, func_args);
+	func XML := err_hand.get_error_func(func_name, func_prms, func_args);
 	
 	-- Chiavi dei tipi di errore che la funzione puo generare.
 	
 	ASSERTION_FAILED TEXT := 'ASSERT_FAILED';
 	QTA_MOV_MAG_SUP_QTA_LOTTO TEXT := 'QTA_MOV_MAG_SUP_QTA_LOTTO';
+	SCA_MAG_SUP_CAR_MAG TEXT := 'SCA_MAG_SUP_CAR_MAG';
+	DISP_LOTTO_NEGATIVA TEXT := 'DISP_LOTTO_NEGATIVA';
+	QTA_LOTTO_INF_DISP_LOTTO TEXT := 'QTA_LOTTO_INF_DISP_LOTTO';
 	
 	-- variabili utili per la gestione di errori differiti.
 	-- Gli errori differiti non vengono lanciati immediatamente al momento della 
@@ -74,8 +80,16 @@ DECLARE
 	-- di qualche tabella
 	-- devono avere il prefisso v_
 	
-	qta_prod UINTEGER;
+	qta_lotto ortasmgr.UINTEGER;
 	sum_qta_car INTEGER;
+	sum_qta_sca INTEGER;
+	cod_lotto TEXT;
+	disp_lotto ortasmgr.UINTEGER;
+	v_key TEXT;
+	v_func XML;
+	v_data XML;
+	v_msg XML;
+	
 	
 	-- >>>> TEMP VARS
 	-- In questa sezione vanno le variabili temporanee per le quali è più
@@ -88,45 +102,46 @@ BEGIN
 	*	----------------+---------------------------
 	*	NomeVariabile		SignificatoVariabile
 	*	----------------+---------------------------
-	*	QtaProd				Quantità di lotto prodotto
+	*	QtaLotto				Quantità di lotto prodotto
 	*	QtaCar				Quantità di lotto caricato in uno qualsiasi dei magazzini
 	*	QtaScar				Quantità di lotto scariato da uno qualsiasi dei magazzini
 	*	QtaPrel				Quantità di lotto prelevato da uno qualsiasi dei magazzini
 	*	QtaReso				Quantità di lotto restituito da un cliente e carcicato in uno qualsiasi dei magazzini
 	*/
 
-	-- Per ogni lotto, i giro magazzino movimentino quantità pari (o inferiore) a quella del lotto iniziale
-	/*
-	*	TEORIA
-	*	// I giro magazzino devono movimentare per una quantità pari a qualla del lotto
-	*	QtaProd = SUM(QtaCar) + SUM(QtaScar)
-	*
-	*	IF(QtaProd = SUM(QtaCar) + SUM(QtaScar))THEN
-	*		TUTTO OK
-	*	ELSE IF(QtaProd > SUM(QtaCar) + SUM(QtaScar))THEN
-	*		ALERT
-	*	ELSE IF(QtaProd < SUM(QtaCar) + SUM(QtaScar))THEN
-	*		ERRORE
-	*	END IF;
-	*/
-	-- IDEA PER IL FUTURO: Separare i lotti aperti dai lotti chiusi. I lotti aperti avranno i controlli. I lotti chiusi saranno bloccati in ogni operazione.
-	
-	FOR rec IN SELECT * FROM lotto
+	FOR rec IN SELECT * FROM ortasmgr.lotto
 	LOOP
-		qta_prod	:= rec.qta;
-		id_lotto := rec.id;
+		qta_lotto := rec.qta;																		
+		cod_lotto := rec.cod;
 		
 		sum_qta_car := (SELECT SUM(mm.qta)
-						FROM movimentazione_magazzino AS mm INNER JOIN tipo_movimentazioine_magazzino AS tmm ON mm.tipo = tmm.label
-						WHERE tmm.is_entrata = TRUE AND modifica_disp_lotto = TRUE);
+						FROM ortasmgr.movimentazione_magazzino AS mm INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm ON mm.tipo = tmm.label
+						WHERE tmm.is_entrata = TRUE AND tmm.modifica_disp_lotto = FALSE);
 		
 		sum_qta_sca	:= (SELECT SUM(mm.qta)
-						FROM movimentazione_magazzino AS mm INNER JOIN tipo_movimentazioine_magazzino AS tmm ON mm.tipo = tmm.label
-						WHERE tmm.is_entrata = FALSE AND modifica_disp_lotto = TRUE);
+						FROM ortasmgr.movimentazione_magazzino AS mm INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm ON mm.tipo = tmm.label
+						WHERE tmm.is_entrata = FALSE AND tmm.modifica_disp_lotto = FALSE);
 						
-		IF(qta_prod > sum_qta_car + sum_qta_sca)THEN
+		-- Per ogni lotto, i giro magazzino movimentino quantità pari (o inferiore) a quella del lotto iniziale
+		/*
+		*	TEORIA
+		*	// I giro magazzino devono movimentare per una quantità pari a qualla del lotto
+		*	QtaLotto = SUM(QtaCar) + SUM(QtaScar)
+		*
+		*	IF(QtaLotto = SUM(QtaCar) + SUM(QtaScar))THEN
+		*		TUTTO OK
+		*	ELSE IF(QtaLotto > SUM(QtaCar) + SUM(QtaScar))THEN
+		*		ALERT
+		*	ELSE IF(QtaLotto < SUM(QtaCar) + SUM(QtaScar))THEN
+		*		ERRORE
+		*	END IF;
+		*/
+		-- IDEA PER IL FUTURO: Separare i lotti aperti dai lotti chiusi. 
+		-- I lotti aperti avranno i controlli. I lotti chiusi saranno bloccati in ogni operazione.				
+		
+		IF(qta_lotto > sum_qta_car + sum_qta_sca)THEN
 			-- INSERIRE ALERT DA VISUALIZZARE ALL'UTENTE
-		ELSIF(qta_prod < sum_qta_car + sum_qta_sca)THEN
+		ELSIF(qta_lotto < sum_qta_car + sum_qta_sca)THEN
 			-- ERRORE
 			-- Quali informazioni sono importanti da visualizzare all'utente programmatore?
 			-- Dove si è verificato l'errore (in quale funzione? in quale riga?)
@@ -153,41 +168,97 @@ BEGIN
 			
 			v_key  := QTA_MOV_MAG_SUP_QTA_LOTTO;
 			v_func := func;
-			v_data := err_hand.get_error_data( xmlelement(name lotto_id, id_lotto) );
+			v_data := err_hand.get_error_data( xmlelement(name lotto_id, cod_lotto) );
 			v_msg  := err_hand.get_error_msg('I giro magazzino devono movimentare per una quantità pari a quella del lotto');
 			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
 		END IF;
-	END LOOP;
 	
-	
-	-- Per ogni movimentazione, gli scarichi magazzino siano inferiore (o uguale) alla quantità caricata
-	/*
-		TEORIA
-		SUM(QtaCar) >= ABS(SUM(QtaScar))
+		-- Per ogni lotto, gli scarichi magazzino siano inferiore (o uguale) 
+		-- alla quantità caricata
+		/*
+			TEORIA
+			SUM(QtaCar) >= ABS(SUM(QtaScar))
 
-		IF (SUM(QtaCar) == ABS(SUM(QtaScar))) THEN
-			TUTTO OK
-		ELSE IF (SUM(QtaCar) > ABS(SUM(QtaScar))) THEN
-			ALERT
-		ELSE IF (SUM(QtaCar) < ABS(SUM(QtaScar))) THEN
-			ERRORE
+			IF (SUM(QtaCar) == ABS(SUM(QtaScar))) THEN
+				TUTTO OK
+			ELSE IF (SUM(QtaCar) > ABS(SUM(QtaScar))) THEN
+				ALERT
+			ELSE IF (SUM(QtaCar) < ABS(SUM(QtaScar))) THEN
+				ERRORE
+			END IF;
+		*/
+		
+		IF (sum_qta_car = ABS(sum_qta_sca))THEN
+			-- OK
+		ELSIF (sum_qta_car > ABS(sum_qta_sca))THEN
+			-- ALERT
+		ELSIF (sum_qta_car < ABS(sum_qta_sca))THEN
+			-- ERRORE	
+			v_key  := SCA_MAG_SUP_CAR_MAG;
+			v_func := func;
+			v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
+			v_msg  := err_hand.get_error_msg('I carico magazzino di un lotto non possono essere inferiore agli scarichi magazzino');
+			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
 		END IF;
-	*/
-	
-	
+		
+		-- Per ogni lotto, la disponibilità lotto sia inferiore o uguale alla
+		-- quantità di lotto iniziale
+		/*
+			QtaLotto >= QtaLotto + (SUM(QtaPrel) + SUM(QtaReso) + SUM(QtaScarto) + ...)
+			QtaLotto >= DisLotto           dove DisLotto = QtaLotto + (SUM(QtaPrel) + ... )
+
+			IF(QtaLotto >= DisLotto) THEN
+				TUTTO OK
+			ELSE IF(QtaLotto < DisLotto) THEN
+				ERRORE
+			END IF;
+
+			IF(DisLotto >= 0) THEN
+				TUTTO OK
+			ELSE
+				ERRORE
+			END IF;
+		*/
+		
+		disp_lotto := qta_lotto + (SELECT SUM(mm.qta)
+						FROM ortasmgr.movimentazione_magazzino AS mm INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm ON mm.tipo = tmm.label
+						WHERE tmm.modifica_disp_lotto = TRUE);
+		
+		IF(disp_lotto >= 0)THEN
+			IF(qta_lotto >= disp_lotto) THEN
+				-- TUTTO OK
+			ELSIF(qta_lotto < disp_lotto)THEN
+				--ERRORE
+				v_key  := QTA_LOTTO_INF_DISP_LOTTO;
+				v_func := func;
+				v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
+				v_msg  := err_hand.get_error_msg('La quantità di un lotto non può essere inferiore alla disponibilità del lotto');
+				RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);		
+			END IF;
+		ELSIF(disp_lotto < 0)THEN
+			--ERRORE
+			v_key  := DISP_LOTTO_NEGATIVA;
+			v_func := func;
+			v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
+ 			v_msg  := err_hand.get_error_msg('La disponibilità del lotto non può essere negativa');
+			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
+		END IF;
+	END LOOP;
+
+	RETURN NULL;
 END;
 $BODY_FUNC_TR$
 LANGUAGE plpgsql VOLATILE;
 
-COMMENT ON FUNCTION movimentazione_magazzino_tr_fn__check_inout_moves() IS
+COMMENT ON FUNCTION ortasmgr.movimentazione_magazzino_tr_fn__check_inout_moves() IS
 $COMMENT$/*
 <comment on="function" type="trigger" version="0.1">
 	<function>
-		<func_descr one_row="Dato un loto, questa funzione assicura la coerenza tra la quantità del lotto e le quantità coinvolte nelle movimentazioni magazzino.">
+		<func_descr one_row="Dato un lotto, questa funzione assicura la coerenza tra la quantità del lotto e le quantità coinvolte nelle movimentazioni magazzino.">
 			Questo trigger assicura che:
 			* Per ogni lotto, i giro magazzino movimentino quantità pari (o 
 			  inferiore) a quella del lotto iniziale
-			* Per ogni movimentazione, gli scarichi magazzino siano inferiore (o
+			* Per ogni lotto, gli scarichi magazzino siano inferiore (o
 			  uguale) alla quantità caricata
 			* Per ogni lotto, la disponibilità lotto sia inferiore o uguale alla
 			  quantità di lotto iniziale
@@ -201,6 +272,8 @@ $COMMENT$/*
 </comment>
 */$COMMENT$;
 
-CREATE TRIGGER		movimentazione_magazzino_tr_____check_inout_moves	AFTER INSERT OR UPDATE OR DELETE
-ON					movimentazione_magazzino							FOR EACH STATEMENT
-EXECUTE PROCEDURE	movimentazione_magazzino_tr_fn__check_inout_moves();
+DROP TRIGGER IF EXISTS     movimentazione_magazzino_tr_____check_inout_moves 
+ON                ortasmgr.movimentazione_magazzino;
+CREATE TRIGGER             movimentazione_magazzino_tr_____check_inout_moves AFTER INSERT OR UPDATE OR DELETE
+ON                ortasmgr.movimentazione_magazzino                          FOR EACH STATEMENT
+EXECUTE PROCEDURE ortasmgr.movimentazione_magazzino_tr_fn__check_inout_moves();
