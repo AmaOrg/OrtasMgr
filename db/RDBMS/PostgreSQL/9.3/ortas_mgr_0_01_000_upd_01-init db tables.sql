@@ -151,6 +151,7 @@ CREATE TABLE OrtasMgr.tipo_movimentazione_magazzino
 	label VARCHAR NOT NULL,
 	is_entrata BOOLEAN NOT NULL,
 	modifica_disp_lotto BOOLEAN NOT NULL,
+	is_carico_iniz BOOLEAN NOT NULL;
 	descr VARCHAR NOT NULL,
 	CONSTRAINT tipo_movimentazione_magazzino_pk PRIMARY KEY(label),
 	CONSTRAINT tipo_movimentazione_magazzino_uc_id UNIQUE(id),
@@ -175,7 +176,7 @@ CREATE TABLE OrtasMgr.movimentazione_magazzino
 	lotto VARCHAR NOT NULL,
 	magazzino VARCHAR NOT NULL,
 	tipo VARCHAR NOT NULL,
-	qta OrtasMgr.UINTEGER NOT NULL,
+	qta INTEGER NOT NULL,
 	note VARCHAR NOT NULL,
 	CONSTRAINT movimentazione_magazzino_pk PRIMARY KEY(lotto, magazzino, data),
 	CONSTRAINT movimentazione_magazzino_uc_id UNIQUE(id)

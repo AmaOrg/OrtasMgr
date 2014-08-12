@@ -12,7 +12,7 @@ DECLARE
 	-- la relazione con gli altri parametri di input della funzione.
 	
 	-- contiene il nome della funzione
-	func_name TEXT = 'movimentazione_magazzino_tr_fn__check_inout_moves';
+	func_name TEXT = 'ortasmgr.movimentazione_magazzino_tr_fn__check_inout_moves';
 	
 	-- contiene i nomi ordinati dei parametri in ingresso della funzione
 	func_prms TEXT[] := ARRAY []::TEXT[];
@@ -35,9 +35,10 @@ DECLARE
 	
 	ASSERTION_FAILED TEXT := 'ASSERT_FAILED';
 	QTA_MOV_MAG_SUP_QTA_LOTTO TEXT := 'QTA_MOV_MAG_SUP_QTA_LOTTO';
-	SCA_MAG_SUP_CAR_MAG TEXT := 'SCA_MAG_SUP_CAR_MAG';
+	CAR_MAG_SUP_SCA_MAG TEXT := 'CAR_MAG_SUP_SCA_MAG';
 	DISP_LOTTO_NEGATIVA TEXT := 'DISP_LOTTO_NEGATIVA';
 	QTA_LOTTO_INF_DISP_LOTTO TEXT := 'QTA_LOTTO_INF_DISP_LOTTO';
+	QTA_LOTTO_INF_QTA_CAR_INIZ TEXT := 'QTA_LOTTO_INF_QTA_CAR_INIZ';
 	
 	-- variabili utili per la gestione di errori differiti.
 	-- Gli errori differiti non vengono lanciati immediatamente al momento della 
@@ -83,6 +84,7 @@ DECLARE
 	qta_lotto ortasmgr.UINTEGER;
 	sum_qta_car INTEGER;
 	sum_qta_sca INTEGER;
+	sum_qta_car_iniz INTEGER;
 	cod_lotto TEXT;
 	disp_lotto ortasmgr.UINTEGER;
 	v_key TEXT;
@@ -111,21 +113,99 @@ BEGIN
 
 	FOR rec IN SELECT * FROM ortasmgr.lotto
 	LOOP
-		qta_lotto := rec.qta;																		
+		qta_lotto := rec.qta;
 		cod_lotto := rec.cod;
 		
-		sum_qta_car := (SELECT SUM(mm.qta)
-						FROM ortasmgr.movimentazione_magazzino AS mm INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm ON mm.tipo = tmm.label
-						WHERE tmm.is_entrata = TRUE AND tmm.modifica_disp_lotto = FALSE);
+		sum_qta_car := (
+			SELECT COALESCE(SUM(mm.qta), 0)
+			FROM
+				ortasmgr.movimentazione_magazzino AS mm 
+					INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm
+				ON mm.tipo = tmm.label
+			WHERE tmm.is_entrata = TRUE AND tmm.modifica_disp_lotto = FALSE);
+			
+		sum_qta_sca	:= (
+			SELECT COALESCE(SUM(mm.qta), 0)
+			FROM
+				ortasmgr.movimentazione_magazzino AS mm
+					INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm
+				ON mm.tipo = tmm.label
+			WHERE tmm.is_entrata = FALSE AND tmm.modifica_disp_lotto = FALSE);
+			
+		sum_qta_car_iniz := (
+			SELECT COALESCE(SUM(mm.qta), 0)
+			FROM
+				ortasmgr.movimentazione_magazzino AS mm
+					INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm
+				ON mm.tipo = tmm.label
+			WHERE tmm.is_carico_iniz = TRUE);
+			
+		-- Per ogni lotto, la somma dei carichi iniziali deve essere pari alla
+		-- quantità del lotto
+		/* TEORIA
+		Se creo un lotto di 1000 pezzi, la somma dei carichi iniziali deve 
+		essere pari a 1000.
+
+		IF(QtaLotto == SUM(QtaCarIniz))
+			TUTTO OK
+		ELSE IF(QtaLotto > SUM(QtaCarIniz))
+			ALERT
+		ELSE IF(QtaLotto < SUM(QtaCarIniz))
+			ERRORE
+		END IF;
+		*/
 		
-		sum_qta_sca	:= (SELECT SUM(mm.qta)
-						FROM ortasmgr.movimentazione_magazzino AS mm INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm ON mm.tipo = tmm.label
-						WHERE tmm.is_entrata = FALSE AND tmm.modifica_disp_lotto = FALSE);
-						
-		-- Per ogni lotto, i giro magazzino movimentino quantità pari (o inferiore) a quella del lotto iniziale
+		IF(qta_lotto = sum_qta_car_iniz)THEN
+			-- TUTTO OK
+		ELSIF(qta_lotto > sum_qta_car_iniz)THEN
+			-- ALERT
+			RAISE NOTICE '%',
+				'ATTENZIONE! Il lotto non è stato completamente caricato nei magazzini';
+		ELSIF(qta_lotto < sum_qta_car_iniz)THEN
+			-- ERRORE
+			v_key  := QTA_LOTTO_INF_QTA_CAR_INIZ;
+			v_func := func;
+			v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
+			v_msg  := err_hand.get_error_msg(
+									'La quantità di un lotto non può essere inferiore alla ' ||
+									'quantità dei carichi iniziali');
+			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
+		END IF;
+		
+		-- Per ogni lotto, gli scarichi magazzino siano inferiore (o uguale) 
+		-- alla quantità caricata
+		/*
+			TEORIA
+			SUM(QtaCar) >= ABS(SUM(QtaScar))
+
+			IF (SUM(QtaCar) == ABS(SUM(QtaScar))) THEN
+				TUTTO OK
+			ELSE IF (SUM(QtaCar) > ABS(SUM(QtaScar))) THEN
+				ALERT
+			ELSE IF (SUM(QtaCar) < ABS(SUM(QtaScar))) THEN
+				ERRORE
+			END IF;
+		*/
+		
+		RAISE NOTICE 'c: %    s: %', sum_qta_car, ABS(sum_qta_sca);
+		IF (sum_qta_car = ABS(sum_qta_sca))THEN
+			-- OK
+		ELSIF (sum_qta_car < ABS(sum_qta_sca))THEN
+			RAISE NOTICE '%',
+				'ATTENZIONE! Scarichi magazzino superiori ai carichi magazzino';
+		ELSIF (sum_qta_car > ABS(sum_qta_sca))THEN
+			-- ERRORE	
+			v_key  := CAR_MAG_SUP_SCA_MAG;
+			v_func := func;
+			v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
+			v_msg  := err_hand.get_error_msg('I carico magazzino di un lotto non possono essere superiori agli scarichi magazzino');
+			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
+		END IF;
+		-- Per ogni lotto, i giro magazzino movimentino quantità pari (o inferiore)
+		-- a quella del lotto iniziale
 		/*
 		*	TEORIA
-		*	// I giro magazzino devono movimentare per una quantità pari a qualla del lotto
+		*	// I giro magazzino devono movimentare per una quantità pari a quella del lotto
 		*	QtaLotto = SUM(QtaCar) + SUM(QtaScar)
 		*
 		*	IF(QtaLotto = SUM(QtaCar) + SUM(QtaScar))THEN
@@ -137,10 +217,13 @@ BEGIN
 		*	END IF;
 		*/
 		-- IDEA PER IL FUTURO: Separare i lotti aperti dai lotti chiusi. 
-		-- I lotti aperti avranno i controlli. I lotti chiusi saranno bloccati in ogni operazione.				
+		-- I lotti aperti avranno i controlli. I lotti chiusi saranno bloccati in ogni operazione.
 		
 		IF(qta_lotto > sum_qta_car + sum_qta_sca)THEN
 			-- INSERIRE ALERT DA VISUALIZZARE ALL'UTENTE
+			RAISE NOTICE '% %',
+				'ATTENZIONE!I giro magazzino devono movimentare per una quantità pari',
+				'a quella del lotto iniziale';
 		ELSIF(qta_lotto < sum_qta_car + sum_qta_sca)THEN
 			-- ERRORE
 			-- Quali informazioni sono importanti da visualizzare all'utente programmatore?
@@ -169,35 +252,9 @@ BEGIN
 			v_key  := QTA_MOV_MAG_SUP_QTA_LOTTO;
 			v_func := func;
 			v_data := err_hand.get_error_data( xmlelement(name lotto_id, cod_lotto) );
-			v_msg  := err_hand.get_error_msg('I giro magazzino devono movimentare per una quantità pari a quella del lotto');
-			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
-		END IF;
-	
-		-- Per ogni lotto, gli scarichi magazzino siano inferiore (o uguale) 
-		-- alla quantità caricata
-		/*
-			TEORIA
-			SUM(QtaCar) >= ABS(SUM(QtaScar))
-
-			IF (SUM(QtaCar) == ABS(SUM(QtaScar))) THEN
-				TUTTO OK
-			ELSE IF (SUM(QtaCar) > ABS(SUM(QtaScar))) THEN
-				ALERT
-			ELSE IF (SUM(QtaCar) < ABS(SUM(QtaScar))) THEN
-				ERRORE
-			END IF;
-		*/
-		
-		IF (sum_qta_car = ABS(sum_qta_sca))THEN
-			-- OK
-		ELSIF (sum_qta_car > ABS(sum_qta_sca))THEN
-			-- ALERT
-		ELSIF (sum_qta_car < ABS(sum_qta_sca))THEN
-			-- ERRORE	
-			v_key  := SCA_MAG_SUP_CAR_MAG;
-			v_func := func;
-			v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
-			v_msg  := err_hand.get_error_msg('I carico magazzino di un lotto non possono essere inferiore agli scarichi magazzino');
+			v_msg  := err_hand.get_error_msg(
+									'I giro magazzino devono movimentare per una quantità pari ' || 
+									'a quella del lotto');
 			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
 		END IF;
 		
@@ -220,9 +277,13 @@ BEGIN
 			END IF;
 		*/
 		
-		disp_lotto := qta_lotto + (SELECT SUM(mm.qta)
-						FROM ortasmgr.movimentazione_magazzino AS mm INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm ON mm.tipo = tmm.label
-						WHERE tmm.modifica_disp_lotto = TRUE);
+		disp_lotto := qta_lotto + (
+			SELECT SUM(mm.qta)
+			FROM
+				ortasmgr.movimentazione_magazzino AS mm
+					INNER JOIN ortasmgr.tipo_movimentazione_magazzino AS tmm 
+				ON mm.tipo = tmm.label
+			WHERE tmm.modifica_disp_lotto = TRUE AND tmm.is_carico_iniz = FALSE);
 		
 		IF(disp_lotto >= 0)THEN
 			IF(qta_lotto >= disp_lotto) THEN
@@ -232,15 +293,18 @@ BEGIN
 				v_key  := QTA_LOTTO_INF_DISP_LOTTO;
 				v_func := func;
 				v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
-				v_msg  := err_hand.get_error_msg('La quantità di un lotto non può essere inferiore alla disponibilità del lotto');
-				RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);		
+				v_msg  := err_hand.get_error_msg(
+										'La quantità di un lotto non può essere inferiore alla ' ||
+										'disponibilità del lotto');
+				RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
 			END IF;
 		ELSIF(disp_lotto < 0)THEN
 			--ERRORE
 			v_key  := DISP_LOTTO_NEGATIVA;
 			v_func := func;
 			v_data := err_hand.get_error_data(xmlelement(name lotto_cod, cod_lotto));
- 			v_msg  := err_hand.get_error_msg('La disponibilità del lotto non può essere negativa');
+			v_msg  := err_hand.get_error_msg(
+									'La disponibilità del lotto non può essere negativa');
 			RAISE EXCEPTION '%', err_hand.get_error(v_key, v_func, v_data, v_msg);
 		END IF;
 	END LOOP;
