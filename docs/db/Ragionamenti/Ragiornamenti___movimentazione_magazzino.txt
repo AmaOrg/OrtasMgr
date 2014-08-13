@@ -1,0 +1,54 @@
+Lotto1 1000
+
+data1	Car		1000	Lotto1	Mag1
+data2	Scar	-400	Lotto1	Mag1
+data3	Car		400		Lotto1	Mag2
+data4	Prel	-1001		Lotto1	Mag1
+data5	Reso	15		Lotto1	Mag2
+
+----------------+---------------------------
+NomeVariabile		SignificatoVariabile
+----------------+---------------------------
+QtaProd				Quantità di lotto prodotto
+QtaCar				Quantità di lotto caricato in uno qualsiasi dei magazzini
+QtaScar				Quantità di lotto scariato da uno qualsiasi dei magazzini
+QtaPrel				Quantità di lotto prelevato da uno qualsiasi dei magazzini
+QtaReso				Quantità di lotto restituito da un cliente e carcicato in uno qualsiasi dei magazzini
+
+// I giro magazzino devono movimentare per una quantità pari a qualla del lotto
+QtaProd = SUM(QtaCar) + SUM(QtaScar)
+
+IF(QtaProd = SUM(QtaCar) + SUM(QtaScar))THEN
+	TUTTO OK
+ELSE IF(QtaProd > SUM(QtaCar) + SUM(QtaScar))THEN
+	ALERT
+ELSE IF(QtaProd < SUM(QtaCar) + SUM(QtaScar))THEN
+	ERRORE
+END IF;
+
+// Gli scarichi magazzino devono essere inferiori (o uguale) alla quantità caricata
+SUM(QtaCar) >= ABS(SUM(QtaScar))
+
+IF (SUM(QtaCar) == ABS(SUM(QtaScar))) THEN
+	TUTTO OK
+ELSE IF (SUM(QtaCar) > ABS(SUM(QtaScar))) THEN
+	ALERT
+ELSE IF (SUM(QtaCar) < ABS(SUM(QtaScar))) THEN
+	ERRORE
+END IF;
+	
+// La disponibilità lotto deve essere inferiore o uguale alla quantità di lotto iniziale
+QtaProd >= QtaProd + (SUM(QtaPrel) + SUM(QtaReso) + SUM(QtaScarto) + ...)
+QtaProd >= DisLotto           dove DisLotto = QtaProd + (SUM(QtaPrel) + ... )
+
+IF(QtaProd >= DisLotto) THEN
+	TUTTO OK
+ELSE IF(QtaProd < DisLotto) THEN
+	ERRORE
+END IF;
+
+IF(DisLotto >= 0) THEN
+	TUTTO OK
+ELSE
+	ERRORE
+END IF;
