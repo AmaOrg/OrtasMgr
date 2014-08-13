@@ -32,7 +32,7 @@ DECLARE
 	func_name TEXT = '%FUNC_NAME%';
 	
 	-- contiene i nomi ordinati dei parametri in ingresso della funzione
-	func_prms TEXT[] := ARRAY ['func_arg0 TYPE', 'func_arg1 TYPE', 'func_arg2 TYPE'];
+	func_prms TEXT[] := ARRAY ['func_arg0 TYPE', 'func_arg1 TYPE', 'func_arg2 TYPE']::TEXT[];
 	
 	-- == ERROR HANDLING VARS ===============
 	-- In questa sezione sono dichiarate tutte le variabili necessarie alla 
@@ -41,7 +41,7 @@ DECLARE
 	-- sezione in modo da rendere il codice meno "pensante" da leggere.
 	
 	-- contiene la rappresentazione in stringa degli argomenti della funzione
-	func_args TEXT[] := ARRAY [func_arg0::TEXT, func_arg1::TEXT, func_arg2::TEXT];
+	func_args TEXT[] := ARRAY [func_arg0::TEXT, func_arg1::TEXT, func_arg2::TEXT]::TEXT[];
 	
 	-- Necessaria in caso di errore.
 	-- Contiene un xml con la firma della funzione e gli argomenti che hanno
@@ -95,20 +95,31 @@ DECLARE
 	-- In questa sezione vanno le variabili il cui nome danno un significato al 
 	-- valore che contengono.
 	
+	v_key TEXT;
+	v_data XML;
+	v_msg XML;
+	
 	-- >>>> TEMP VARS
 	-- In questa sezione vanno le variabili temporanee per le quali è più 
 	-- importante il loro tipo del loro significato.
 	
 	rec RECORD;
 BEGIN
+	v_key  := 'TO_BE_IMPLEMENTED';
+	v_data := err_hand.get_error_data();
+	v_msg  := err_hand.get_error_msg('La funzione deve essere ancora implementata');
+	RAISE EXCEPTION '%', err_hand.get_error(v_key, func, v_data, v_msg);
 	
+	RETURN NULL;
 END;
 $BODY_FUNC_TR$
-LANGUAGE plpgsql VOLATILE;
+LANGUAGE plpgsql {IMMUTABLE | VOLATILE};
 
-CREATE TRIGGER		%NOME_TABELLA%_tr_____%MINI_TR_DESCR%	AFTER [ [INSERT | UPDATE | DELETE]  OR UPDATE OR DELETE]
-ON								%NOME_TABELLA%												FOR EACH STATEMENT
-EXECUTE PROCEDURE	%NOME_TABELLA%_tr_fn__%MINI_TR_DESCR%(/*func_arg0 TYPE, func_arg1 TYPE, func_arg2 TYPE*/);
+DROP TRIGGER IF EXISTS          %NOME_TABELLA%_tr_____%MINI_TR_DESCR%
+ON                %NOME_SCHEMA%.%NOME_TABELLA%
+CREATE TRIGGER                  %NOME_TABELLA%_tr_____%MINI_TR_DESCR%	AFTER { {INSERT | UPDATE | DELETE} [ OR UPDATE | OR DELETE ] }
+ON                %NOME_SCHEMA%.%NOME_TABELLA%                        FOR EACH { ROW | STATEMENT }
+EXECUTE PROCEDURE %NOME_SCHEMA%.%NOME_TABELLA%_tr_fn__%MINI_TR_DESCR%();
 
 COMMENT ON FUNCTION func_template(p_p0 INTEGER, p_p1 TEXT, p_p2 BOOLEAN) IS $COMMENT$/*
 <comment on="function" type="function" version="0.1">
