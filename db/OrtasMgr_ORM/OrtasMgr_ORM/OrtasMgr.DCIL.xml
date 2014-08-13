@@ -18,15 +18,6 @@
 			</dep:comparisonPredicate>
 		</dcl:checkConstraint>
 	</dcl:domain>
-	<dcl:domain name="QuantitaMovimentazioneMagazzino">
-		<dcl:predefinedDataType name="INTEGER" />
-		<dcl:checkConstraint name="QuantitaMovimentazioneMagazzino_Unsigned_Chk">
-			<dep:comparisonPredicate operator="greaterThanOrEquals">
-				<dep:valueKeyword />
-				<ddt:exactNumericLiteral value="0" />
-			</dep:comparisonPredicate>
-		</dcl:checkConstraint>
-	</dcl:domain>
 	<dcl:domain name="QuantitaLotto">
 		<dcl:predefinedDataType name="INTEGER" />
 		<dcl:checkConstraint name="QuantitaLotto_Unsigned_Chk">
@@ -86,19 +77,19 @@
 		<dcl:column name="id" isNullable="false" isIdentity="true">
 			<dcl:predefinedDataType name="INTEGER" />
 		</dcl:column>
-		<dcl:column name="ldv" isNullable="false" isIdentity="false">
-			<dcl:predefinedDataType name="CHARACTER VARYING" />
-		</dcl:column>
 		<dcl:column name="data" isNullable="false" isIdentity="false">
 			<dcl:predefinedDataType name="DATETIME" />
 		</dcl:column>
 		<dcl:column name="note" isNullable="false" isIdentity="false">
 			<dcl:predefinedDataType name="CHARACTER VARYING" />
 		</dcl:column>
-		<dcl:uniquenessConstraint name="Spedizione_UC" isPrimary="false">
+		<dcl:column name="ldv" isNullable="true" isIdentity="false">
+			<dcl:predefinedDataType name="CHARACTER VARYING" />
+		</dcl:column>
+		<dcl:uniquenessConstraint name="Spedizione_PK" isPrimary="true">
 			<dcl:columnRef name="id" />
 		</dcl:uniquenessConstraint>
-		<dcl:uniquenessConstraint name="Spedizione_PK" isPrimary="true">
+		<dcl:uniquenessConstraint name="Spedizione_UC" isPrimary="false">
 			<dcl:columnRef name="ldv" />
 		</dcl:uniquenessConstraint>
 	</dcl:table>
@@ -278,6 +269,9 @@
 		<dcl:column name="modifica_disp_lotto" isNullable="false" isIdentity="false">
 			<dcl:predefinedDataType name="BOOLEAN" />
 		</dcl:column>
+		<dcl:column name="CaricoIniziale" isNullable="false" isIdentity="false">
+			<dcl:predefinedDataType name="BOOLEAN" />
+		</dcl:column>
 		<dcl:uniquenessConstraint name="TipoMovimentazioneMagazzino_UC1" isPrimary="false">
 			<dcl:columnRef name="id" />
 		</dcl:uniquenessConstraint>
@@ -331,7 +325,7 @@
 			<dcl:predefinedDataType name="CHARACTER VARYING" />
 		</dcl:column>
 		<dcl:column name="qta" isNullable="false" isIdentity="false">
-			<dcl:domainRef name="QuantitaMovimentazioneMagazzino" />
+			<dcl:predefinedDataType name="INTEGER" />
 		</dcl:column>
 		<dcl:column name="note" isNullable="false" isIdentity="false">
 			<dcl:predefinedDataType name="CHARACTER VARYING" />
@@ -374,7 +368,7 @@
 			<dcl:predefinedDataType name="CHARACTER VARYING" />
 		</dcl:column>
 		<dcl:column name="spedizione" isNullable="false" isIdentity="false">
-			<dcl:predefinedDataType name="CHARACTER VARYING" />
+			<dcl:predefinedDataType name="INTEGER" />
 		</dcl:column>
 		<dcl:uniquenessConstraint name="PrelievoMagazzino_UC" isPrimary="false">
 			<dcl:columnRef name="id" />
@@ -389,7 +383,7 @@
 			<dcl:columnRef sourceName="prodotto" targetName="prodotto" />
 		</dcl:referenceConstraint>
 		<dcl:referenceConstraint name="PrelievoMagazzino_FK2" targetTable="Spedizione">
-			<dcl:columnRef sourceName="spedizione" targetName="ldv" />
+			<dcl:columnRef sourceName="spedizione" targetName="id" />
 		</dcl:referenceConstraint>
 		<dcl:referenceConstraint name="PrelievoMagazzino_FK3" targetTable="MovimentazioneMagazzino">
 			<dcl:columnRef sourceName="lotto" targetName="lotto" />

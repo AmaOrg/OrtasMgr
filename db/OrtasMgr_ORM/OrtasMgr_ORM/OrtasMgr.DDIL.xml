@@ -27,17 +27,6 @@
 			</ddl:checkConstraintDefinition>
 		</ddl:domainConstraintDefinition>
 	</ddl:domainDefinition>
-	<ddl:domainDefinition name="QuantitaMovimentazioneMagazzino" schema="OrtasMgr">
-		<ddt:exactNumeric type="INTEGER" />
-		<ddl:domainConstraintDefinition name="QuantitaMovimentazioneMagazzino_Unsigned_Chk">
-			<ddl:checkConstraintDefinition>
-				<dep:comparisonPredicate operator="greaterThanOrEquals">
-					<dep:valueKeyword />
-					<ddt:exactNumericLiteral value="0" />
-				</dep:comparisonPredicate>
-			</ddl:checkConstraintDefinition>
-		</ddl:domainConstraintDefinition>
-	</ddl:domainDefinition>
 	<ddl:domainDefinition name="QuantitaLotto" schema="OrtasMgr">
 		<ddt:exactNumeric type="INTEGER" />
 		<ddl:domainConstraintDefinition name="QuantitaLotto_Unsigned_Chk">
@@ -162,12 +151,6 @@
 				<ddl:notNullKeyword />
 			</ddl:columnConstraintDefinition>
 		</ddl:columnDefinition>
-		<ddl:columnDefinition name="ldv">
-			<ddt:characterString type="CHARACTER VARYING" />
-			<ddl:columnConstraintDefinition>
-				<ddl:notNullKeyword />
-			</ddl:columnConstraintDefinition>
-		</ddl:columnDefinition>
 		<ddl:columnDefinition name="data">
 			<ddt:time type="DATETIME" />
 			<ddl:columnConstraintDefinition>
@@ -180,13 +163,16 @@
 				<ddl:notNullKeyword />
 			</ddl:columnConstraintDefinition>
 		</ddl:columnDefinition>
-		<ddl:tableConstraintDefinition name="Spedizione_UC">
-			<ddl:uniqueConstraintDefinition type="UNIQUE">
+		<ddl:columnDefinition name="ldv">
+			<ddt:characterString type="CHARACTER VARYING" />
+		</ddl:columnDefinition>
+		<ddl:tableConstraintDefinition name="Spedizione_PK">
+			<ddl:uniqueConstraintDefinition type="PRIMARY KEY">
 				<dep:simpleColumnReference name="id" />
 			</ddl:uniqueConstraintDefinition>
 		</ddl:tableConstraintDefinition>
-		<ddl:tableConstraintDefinition name="Spedizione_PK">
-			<ddl:uniqueConstraintDefinition type="PRIMARY KEY">
+		<ddl:tableConstraintDefinition name="Spedizione_UC">
+			<ddl:uniqueConstraintDefinition type="UNIQUE">
 				<dep:simpleColumnReference name="ldv" />
 			</ddl:uniqueConstraintDefinition>
 		</ddl:tableConstraintDefinition>
@@ -533,6 +519,12 @@
 				<ddl:notNullKeyword />
 			</ddl:columnConstraintDefinition>
 		</ddl:columnDefinition>
+		<ddl:columnDefinition name="CaricoIniziale">
+			<ddt:boolean type="BOOLEAN" />
+			<ddl:columnConstraintDefinition>
+				<ddl:notNullKeyword />
+			</ddl:columnConstraintDefinition>
+		</ddl:columnDefinition>
 		<ddl:tableConstraintDefinition name="TipoMovimentazioneMagazzino_UC1">
 			<ddl:uniqueConstraintDefinition type="UNIQUE">
 				<dep:simpleColumnReference name="id" />
@@ -639,7 +631,7 @@
 			</ddl:columnConstraintDefinition>
 		</ddl:columnDefinition>
 		<ddl:columnDefinition name="qta">
-			<ddt:domain name="QuantitaMovimentazioneMagazzino" schema="OrtasMgr" />
+			<ddt:exactNumeric type="INTEGER" />
 			<ddl:columnConstraintDefinition>
 				<ddl:notNullKeyword />
 			</ddl:columnConstraintDefinition>
@@ -709,7 +701,7 @@
 			</ddl:columnConstraintDefinition>
 		</ddl:columnDefinition>
 		<ddl:columnDefinition name="spedizione">
-			<ddt:characterString type="CHARACTER VARYING" />
+			<ddt:exactNumeric type="INTEGER" />
 			<ddl:columnConstraintDefinition>
 				<ddl:notNullKeyword />
 			</ddl:columnConstraintDefinition>
@@ -844,7 +836,7 @@
 			<ddl:referentialConstraintDefinition>
 				<dep:simpleColumnReference name="spedizione" />
 				<ddl:referencesSpecification name="Spedizione" onDelete="RESTRICT" onUpdate="RESTRICT" schema="OrtasMgr">
-					<dep:simpleColumnReference name="ldv" />
+					<dep:simpleColumnReference name="id" />
 				</ddl:referencesSpecification>
 			</ddl:referentialConstraintDefinition>
 		</ddl:addTableConstraintDefinition>

@@ -9,8 +9,6 @@ CREATE DOMAIN OrtasMgr.GiacenzaMinimaProdotto AS INTEGER CONSTRAINT GiacenzaMini
 
 CREATE DOMAIN OrtasMgr.QuantitaProdottoOrdinato AS INTEGER CONSTRAINT QuantitaProdottoOrdinato_Unsigned_Chk CHECK (VALUE >= 0);
 
-CREATE DOMAIN OrtasMgr.QuantitaMovimentazioneMagazzino AS INTEGER CONSTRAINT QuantitaMovimentazioneMagazzino_Unsigned_Chk CHECK (VALUE >= 0);
-
 CREATE DOMAIN OrtasMgr.QuantitaLotto AS INTEGER CONSTRAINT QuantitaLotto_Unsigned_Chk CHECK (VALUE >= 0);
 
 CREATE TABLE OrtasMgr.Cliente
@@ -38,11 +36,11 @@ CREATE TABLE OrtasMgr.Prodotto
 CREATE TABLE OrtasMgr.Spedizione
 (
 	id SERIAL NOT NULL,
-	ldv CHARACTER VARYING NOT NULL,
 	data TIMESTAMP NOT NULL,
 	note CHARACTER VARYING NOT NULL,
-	CONSTRAINT Spedizione_UC UNIQUE(id),
-	CONSTRAINT Spedizione_PK PRIMARY KEY(ldv)
+	ldv CHARACTER VARYING,
+	CONSTRAINT Spedizione_PK PRIMARY KEY(id),
+	CONSTRAINT Spedizione_UC UNIQUE(ldv)
 );
 
 CREATE TABLE OrtasMgr.Ordine
@@ -119,6 +117,7 @@ CREATE TABLE OrtasMgr.TipoMovimentazioneMagazzino
 	is_entrata BOOLEAN NOT NULL,
 	descr CHARACTER VARYING NOT NULL,
 	modifica_disp_lotto BOOLEAN NOT NULL,
+	CaricoIniziale BOOLEAN NOT NULL,
 	CONSTRAINT TipoMovimentazioneMagazzino_UC1 UNIQUE(id),
 	CONSTRAINT TipoMovimentazioneMagazzino_UC2 UNIQUE(cod),
 	CONSTRAINT TipoMovimentazioneMagazzino_PK PRIMARY KEY(label)
@@ -142,7 +141,7 @@ CREATE TABLE OrtasMgr.MovimentazioneMagazzino
 	lotto CHARACTER VARYING NOT NULL,
 	magazzino CHARACTER VARYING NOT NULL,
 	tipo CHARACTER VARYING NOT NULL,
-	qta OrtasMgr.QuantitaMovimentazioneMagazzino NOT NULL,
+	qta INTEGER NOT NULL,
 	note CHARACTER VARYING NOT NULL,
 	CONSTRAINT MovimentazioneMagazzino_PK PRIMARY KEY(lotto, magazzino, data),
 	CONSTRAINT MovimentazioneMagazzino_UC UNIQUE(id)
@@ -156,7 +155,7 @@ CREATE TABLE OrtasMgr.PrelievoMagazzino
 	data TIMESTAMP NOT NULL,
 	ordine CHARACTER VARYING NOT NULL,
 	prodotto CHARACTER VARYING NOT NULL,
-	spedizione CHARACTER VARYING NOT NULL,
+	spedizione INTEGER NOT NULL,
 	CONSTRAINT PrelievoMagazzino_UC UNIQUE(id),
 	CONSTRAINT PrelievoMagazzino_PK PRIMARY KEY(lotto, magazzino, data)
 );
@@ -183,7 +182,7 @@ ALTER TABLE OrtasMgr.MovimentazioneMagazzino ADD CONSTRAINT MovimentazioneMagazz
 
 ALTER TABLE OrtasMgr.PrelievoMagazzino ADD CONSTRAINT PrelievoMagazzino_FK1 FOREIGN KEY (ordine, prodotto) REFERENCES OrtasMgr.OrdineProdotto (ordine, prodotto) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
-ALTER TABLE OrtasMgr.PrelievoMagazzino ADD CONSTRAINT PrelievoMagazzino_FK2 FOREIGN KEY (spedizione) REFERENCES OrtasMgr.Spedizione (ldv) ON DELETE RESTRICT ON UPDATE RESTRICT;
+ALTER TABLE OrtasMgr.PrelievoMagazzino ADD CONSTRAINT PrelievoMagazzino_FK2 FOREIGN KEY (spedizione) REFERENCES OrtasMgr.Spedizione (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
 ALTER TABLE OrtasMgr.PrelievoMagazzino ADD CONSTRAINT PrelievoMagazzino_FK3 FOREIGN KEY (lotto, magazzino, data) REFERENCES OrtasMgr.MovimentazioneMagazzino (lotto, magazzino, data) ON DELETE RESTRICT ON UPDATE RESTRICT;
 
