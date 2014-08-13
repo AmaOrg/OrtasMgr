@@ -70,11 +70,11 @@ CREATE TABLE OrtasMgr.Prodotto
 CREATE TABLE OrtasMgr.Spedizione
 (
 	id SERIAL NOT NULL,
-	ldv VARCHAR NOT NULL,
+	ldv VARCHAR,
 	data TIMESTAMP NOT NULL,
 	note VARCHAR NOT NULL,
-	CONSTRAINT Spedizione_pk PRIMARY KEY(ldv),
-	CONSTRAINT Spedizione_uc_id UNIQUE(id)
+	CONSTRAINT Spedizione_pk PRIMARY KEY(id),
+	CONSTRAINT Spedizione_uc_ldv UNIQUE(ldv)
 );
 
 CREATE TABLE OrtasMgr.Ordine
@@ -151,6 +151,7 @@ CREATE TABLE OrtasMgr.tipo_movimentazione_magazzino
 	label VARCHAR NOT NULL,
 	is_entrata BOOLEAN NOT NULL,
 	modifica_disp_lotto BOOLEAN NOT NULL,
+	is_carico_iniz BOOLEAN NOT NULL,
 	descr VARCHAR NOT NULL,
 	CONSTRAINT tipo_movimentazione_magazzino_pk PRIMARY KEY(label),
 	CONSTRAINT tipo_movimentazione_magazzino_uc_id UNIQUE(id),
@@ -189,7 +190,7 @@ CREATE TABLE OrtasMgr.prelievo_magazzino
 	data TIMESTAMP NOT NULL,
 	ordine VARCHAR NOT NULL,
 	prodotto VARCHAR NOT NULL,
-	spedizione VARCHAR NOT NULL,
+	spedizione INTEGER NOT NULL,
 	CONSTRAINT prelievo_magazzino_pk PRIMARY KEY(lotto, magazzino, data),
 	CONSTRAINT prelievo_magazzino_uc_id UNIQUE(id)
 );
@@ -239,12 +240,45 @@ FOREIGN KEY (ordine, prodotto) REFERENCES OrtasMgr.ordine_prodotto (ordine, prod
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE OrtasMgr.prelievo_magazzino ADD CONSTRAINT prelievo_magazzino_fk_spedizione
-FOREIGN KEY (spedizione) REFERENCES OrtasMgr.Spedizione (ldv)
+FOREIGN KEY (spedizione) REFERENCES OrtasMgr.Spedizione (id)
 ON DELETE RESTRICT ON UPDATE CASCADE;
 
 ALTER TABLE OrtasMgr.prelievo_magazzino ADD CONSTRAINT prelievo_magazzino_fk_lotto_magazzino_data
 FOREIGN KEY (lotto, magazzino, data) REFERENCES OrtasMgr.movimentazione_magazzino (lotto, magazzino, data)
 ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- //////////////////////////////////
+-- // IMMETTO I DATI DI DEFAULT
+
+INSERT INTO ortasmgr.stato_ordine
+       (cod , label       , descr)
+VALUES ('IC', 'In corso'  , 'Un ordine è ''In corso'' quando almeno uno prodotto ha stato ''In attesa'' oppure ''In produzione''.'                               ),
+       ('DS', 'Da spedire', 'Un ordine è ''Da spedire'' quando almeno un prodotto ha stato ''Da spedire'' ed i restanti hanno stato ''Spedito'' o ''Eliminato''.'),
+       ('CH', 'Chiuso'    , 'Un ordine è ''Chiuso'' quando almeno un prodotto ha stato ''Spedito'' ed i restanti prodotti hanno stato ''Eliminato'''             ),
+       ('EL', 'Eliminato' , 'Un ordine è ''Eliminato quanto tutti i suoi prodotti hanno stato ''Eliminato'''                                                     );
+ 	
+INSERT INTO ortasmgr.stato_ordine_prodotto
+       (cod , label, descr)
+VALUES ('IA', 'In attesa', 'Un ordine prodotto è ''In attesa'' quando tale prodotto non è prodotto internamente e la richiesta del prodotto non può essere soddisfatta dalle disponibilità magazzino.'),
+       ('IP', 'In produzione', 'Un ordine prodotto è ''In produzione'' quando tale prodotto è prodotto internamente e la richiesta del prodotto non può essere soddisfatta dalle disponibilità magazzino.'),
+       ('DS', 'Da spedire', 'Un ordine prodotto è ''Da spedire'' se la richiesta del prodotto può essere soddisfatta dalle disponibilità di magazzino'),
+       ('SP', 'Spedito', 'Un ordine prodotto è spedito quando una spezione (o più) spedizione un prelievo magazzino per l''ordine prodotto in quantità pari alla quantità ordinata'),
+       ('EL', 'Eliminato', 'Un ordine prodotto è eliminato quando tale ordine viene eliminato dall''utente');
+
+INSERT INTO ortasmgr.tipo_ordine
+       (cod , label              , descr)
+VALUES ('OR', 'Ordine'           , ''   ),
+       ('OE', 'Ordine e-commerce', ''   );
+ 
+INSERT INTO OrtasMgr.tipo_movimentazione_magazzino
+       (cod , label            , is_entrata, modifica_disp_lotto, descr, is_carico_iniz)
+VALUES ('CA', 'Carico'         , TRUE      , FALSE              , ''   , FALSE         ),
+       ('SP', 'Spedizione'     , FALSE     , TRUE               , ''   , FALSE         ),
+       ('ST', 'Scarto'         , FALSE     , TRUE               , ''   , FALSE         ),
+       ('SC', 'Scarico'        , FALSE     , FALSE              , ''   , FALSE         ),
+       ('RS', 'Reso'           , TRUE      , TRUE               , ''   , FALSE         ),
+			 ('CI', 'Carico iniziale', TRUE      , TRUE               , ''   , TRUE          );
+			 ; 
 
 RETURN 'OK';
 END;
