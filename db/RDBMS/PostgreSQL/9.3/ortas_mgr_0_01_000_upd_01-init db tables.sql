@@ -176,7 +176,7 @@ CREATE TABLE OrtasMgr.movimentazione_magazzino
 	lotto VARCHAR NOT NULL,
 	magazzino VARCHAR NOT NULL,
 	tipo VARCHAR NOT NULL,
-	qta OrtasMgr.UINTEGER NOT NULL,
+	qta INTEGER NOT NULL,
 	note VARCHAR NOT NULL,
 	CONSTRAINT movimentazione_magazzino_pk PRIMARY KEY(lotto, magazzino, data),
 	CONSTRAINT movimentazione_magazzino_uc_id UNIQUE(id)
