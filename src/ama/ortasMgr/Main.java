@@ -1,3 +1,5 @@
+package ama.ortasMgr;
+
 import ama.ortasMgr.MainFrame;
 
 public class Main extends java.lang.Object

@@ -11,15 +11,24 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
+
+import java.awt.BorderLayout;
+import java.awt.Color;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JLabel;
+import javax.swing.JTextField;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.GroupLayout;
+
 public class MainFrame extends JFrame
 {
-	public MainFrame()
-	{
+	public MainFrame() {
 		this.initGui();
 	}
 
-	private void initGui()
-	{
+	private void initGui() {
 		// Configuro il Frame
 		this.initGui_ConfigFrame();
 
@@ -27,15 +36,13 @@ public class MainFrame extends JFrame
 		this.initGui_MenuBar();
 	}
 
-	private void initGui_ConfigFrame()
-	{
+	private void initGui_ConfigFrame() {
 		super.setTitle("Ortas Manager");
 		super.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		super.setSize(500, 200);
 	}
 
-	private void initGui_MenuBar()
-	{
+	private void initGui_MenuBar() {
 		// Creiamo la barra dei menu della finestra
 		JMenuBar menubar;
 		menubar = new JMenuBar();
@@ -55,15 +62,12 @@ public class MainFrame extends JFrame
 		super.setJMenuBar(menubar);
 	}
 
-	private void initGui_MenuBar_Sistema(JMenuBar menubar)
-	{
+	private void initGui_MenuBar_Sistema(JMenuBar menubar) {
 		// Creo il menu "Sistema"
 		JMenu menu_sistema;
 
 		menu_sistema = new JMenu("Sistema");
 		menu_sistema.setMnemonic(KeyEvent.VK_S);
-		//MenuBarListener mbl = new MenuBarListener();
-		//menu_sistema.addMenuListener(mbl);
 
 		menubar.add(menu_sistema);
 
@@ -73,24 +77,18 @@ public class MainFrame extends JFrame
 
 		menu_sistema.add(menuitem_sistema_esci);
 
-		//Sistema_Esci_MenuItemListener se = new 	Sistema_Esci_MenuItemListener();
-		//menuitem_sistema_esci.addItemListener(se);
-	
 		Sistema_Esci_ActionListener seal = new Sistema_Esci_ActionListener();
 		seal.parent_frame = this;
 		menuitem_sistema_esci.addActionListener(seal);
-	
 
 		// Creo la voce "LogOut" del menu Sistema
 		JMenuItem menuitem_sistema_logout;
 		menuitem_sistema_logout = new JMenuItem("LogOut", KeyEvent.VK_L);
 
 		menu_sistema.add(menuitem_sistema_logout);
-
 	}
 	
-	private void initGui_MenuBar_MenuOrdini(JMenuBar menubar)
-	{
+	private void initGui_MenuBar_MenuOrdini(JMenuBar menubar) {
 		// Credo il menu "Ordini"
 		JMenu menu_ordini;
 		
@@ -112,8 +110,7 @@ public class MainFrame extends JFrame
 		menu_ordini.add(menuitem_ordini_nuovo);
 	}
 
-	private void initGui_MenuBar_MenuMagazzino(JMenuBar menubar)
-	{
+	private void initGui_MenuBar_MenuMagazzino(JMenuBar menubar) {
 		// Creo il menu "Magazzino"
 		JMenu menu_magazzino;
 		
@@ -141,8 +138,7 @@ public class MainFrame extends JFrame
 		menu_magazzino.add(menuitem_magazzino_carica);
 	}
 
-	private void initGui_MenuBar_MenuProdotti(JMenuBar menubar)
-	{
+	private void initGui_MenuBar_MenuProdotti(JMenuBar menubar) {
 		// Creo il menu "Prodotti"
 		JMenu menu_prodotti;
 
@@ -163,10 +159,11 @@ public class MainFrame extends JFrame
 
 		menu_prodotti.add(menuitem_prodotti_nuovo);
 
+		Prodotti_Nuovo_ActionListener pnal = new Prodotti_Nuovo_ActionListener();
+		menuitem_prodotti_nuovo.addActionListener(pnal);
 	}
 
-	private void initGui_MenuBar_MenuReports(JMenuBar menubar)
-	{
+	private void initGui_MenuBar_MenuReports(JMenuBar menubar) {
 		// Creo il menu "Reports"
 		JMenu menu_reports;
 
@@ -216,7 +213,7 @@ public class MainFrame extends JFrame
 				{
 					System.exit(0);
 					// Simulazione fallimento metodo exit
-					// SecurityException my_se = new SecurityException("faild exit number " + c);
+					// SecurityException my_se = new SecurityException("failed exit number " + c);
 					// throw my_se; 
 				}
 				catch(SecurityException se)
@@ -254,5 +251,23 @@ public class MainFrame extends JFrame
 			this.chiediConfermaUscita();
 		}
 	}
-}
 
+	private class Prodotti_Nuovo_ActionListener implements ActionListener
+	{
+		public void actionPerformed(ActionEvent ae) {
+			// creo la finestra tramite la quale inserire il nuovo prodotto
+			JFrame f = new JFrame();
+			f.setTitle("Anagrafica Prodotto (Nuovo)");
+			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.setSize(600, 200);
+			f.setLocationRelativeTo(null); // finestra nel centro schermo
+
+			// creo il pannello da inserire nella finestra
+			// ProdottoPanel p = new ProdottoPanel();
+			ProdottoPanel2 p = new ProdottoPanel2();
+
+			f.add(p, BorderLayout.CENTER);
+			f.setVisible(true);
+		}
+	}
+}
