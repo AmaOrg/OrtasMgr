@@ -19,6 +19,7 @@
 rm -r ./../classes/*
 
 javac \
+  -g \
   -sourcepath ./../src/ \
   -classpath ./../classes/ \
   -d ./../classes/ \
