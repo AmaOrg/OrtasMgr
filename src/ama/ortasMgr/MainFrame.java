@@ -1,5 +1,7 @@
 package ama.ortasMgr;
 
+import ama.ortasMgr.MagazzinoCarica;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -55,7 +57,7 @@ public class MainFrame extends JFrame
 		this.initGui_MenuBar_MenuMagazzino(menubar);
 		// Creo il Menu "Prodotti"
 		this.initGui_MenuBar_MenuProdotti(menubar);
-		// Creo il Menu "Reports"			
+		// Creo il Menu "Reports"
 		this.initGui_MenuBar_MenuReports(menubar);
 
 		// Aggiungo il JMenuBar appena creato al JFrame
@@ -92,7 +94,7 @@ public class MainFrame extends JFrame
 		// Credo il menu "Ordini"
 		JMenu menu_ordini;
 		
-		menu_ordini = new JMenu("Ordini");		
+		menu_ordini = new JMenu("Ordini");
 		menu_ordini.setMnemonic(KeyEvent.VK_O);
 
 		menubar.add(menu_ordini);
@@ -102,12 +104,15 @@ public class MainFrame extends JFrame
 		menuitem_ordini_cerca = new JMenuItem("Cerca", KeyEvent.VK_C);
 
 		menu_ordini.add(menuitem_ordini_cerca); 
-	
+
 		// Creo la voce "Nuovo" del menu "Ordini"
 		JMenuItem menuitem_ordini_nuovo;
 		menuitem_ordini_nuovo = new JMenuItem("Nuovo", KeyEvent.VK_N);
 
 		menu_ordini.add(menuitem_ordini_nuovo);
+		
+		Ordini_Nuovo_ActionListener onal = new Ordini_Nuovo_ActionListener();
+		menuitem_ordini_nuovo.addActionListener(onal);
 	}
 
 	private void initGui_MenuBar_MenuMagazzino(JMenuBar menubar) {
@@ -136,6 +141,9 @@ public class MainFrame extends JFrame
 		menuitem_magazzino_carica = new JMenuItem("Carica", KeyEvent.VK_A);
 
 		menu_magazzino.add(menuitem_magazzino_carica);
+		
+		Magaz_Carica_ActionListener mcal = new Magaz_Carica_ActionListener();
+		menuitem_magazzino_carica.addActionListener(mcal);
 	}
 
 	private void initGui_MenuBar_MenuProdotti(JMenuBar menubar) {
@@ -268,6 +276,41 @@ public class MainFrame extends JFrame
 
 			f.add(p, BorderLayout.CENTER);
 			f.setVisible(true);
+		}
+	}
+	
+	private class Ordini_Nuovo_ActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+		// creo la finestra tramite la quale inserire il nuovo prodotto
+		JFrame f = new JFrame();
+		f.setTitle("Prodotto (Nuovo)");
+		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		f.setSize(800, 500);
+		f.setLocationRelativeTo(null); // finestra nel centro schermo
+		
+		// creo il pannello da inserire nella finestra
+		OrdinePanel p = new OrdinePanel();
+		
+		f.add(p, BorderLayout.CENTER);
+		f.setVisible(true);
+		}
+	}
+	
+	private class Magaz_Carica_ActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			// creo la finestra tramite la quale inserire il carico magazzino
+			JFrame frame = new JFrame();
+			frame.setTitle("Caricamento Magazzino");
+			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			frame.setSize(900, 300);
+			frame.setLocationRelativeTo(null); // finestra nel centro schermo
+
+			// creo il pannello da inserire nella finestra
+			//MagazzinoCarica p = new MagazzinoCarica();
+			MagazzinoPanel p = new MagazzinoPanel();
+
+			frame.add(p, BorderLayout.CENTER);
+			frame.setVisible(true);
 		}
 	}
 }

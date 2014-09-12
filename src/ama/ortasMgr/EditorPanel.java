@@ -64,8 +64,8 @@ public abstract class EditorPanel extends JPanel
 		GroupLayout.SequentialGroup sg;
 		GroupLayout.ParallelGroup pg;
 
-		sg = gl.createSequentialGroup();
-		pg = gl.createParallelGroup(GroupLayout.Alignment.LEADING);
+		sg = gl.createSequentialGroup(); // Aggiungo gruppo orizzontale
+		pg = gl.createParallelGroup(GroupLayout.Alignment.LEADING); // Aggiungo 1°rettangolo
 		pg.addComponent(this.btn_esci);
 		sg.addGroup(pg);
 		pg = gl.createParallelGroup(GroupLayout.Alignment.TRAILING);
@@ -81,10 +81,11 @@ public abstract class EditorPanel extends JPanel
 		gl.setVerticalGroup(sg);
 
 		this.pnl_content = new JPanel();
-		this.initContentPanel(this.pnl_content);
 
 		this.add(this.pnl_content, BorderLayout.CENTER);
 		this.add(this.pnl_buttons, BorderLayout.PAGE_END);
+		
+		this.initContentPanel(this.pnl_content);
 	}
 
 	protected abstract void initContentPanel(JPanel pnl_content);

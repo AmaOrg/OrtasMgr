@@ -1,6 +1,9 @@
 package ama.ortasMgr;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.FlowLayout;
+import java.awt.event.ActionListener;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -119,6 +122,15 @@ public class ProdottoPanel2 extends EditorPanel
 
 		this._createChildren();
 		this._doLayout(p);
+
+		Btn_Salva_ActionListener btns = new Btn_Salva_ActionListener();
+		super.btn_salva.addActionListener(btns);  
+	}
+
+	private class Btn_Salva_ActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			System.out.println("Ciao");
+		}
 	}
 
 	// public
