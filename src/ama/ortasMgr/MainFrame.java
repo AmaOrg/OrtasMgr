@@ -297,8 +297,8 @@ public class MainFrame extends JFrame
 
 			// creo il pannello da inserire nella finestra
 			// ProdottoPanel p = new ProdottoPanel();
-			ProdottoPanel2 p = new ProdottoPanel2();
-	
+			ProdottoPanel3 p = new ProdottoPanel3();
+
 			f.add(p, BorderLayout.CENTER);
 			f.setVisible(true);
 		}
