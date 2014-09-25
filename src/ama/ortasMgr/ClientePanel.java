@@ -1,8 +1,8 @@
 package ama.ortasMgr;
 
-import java.awt.*;
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class ClientePanel extends EditorPanel
 {
 	// GUI VARS
@@ -11,10 +11,9 @@ public class ClientePanel extends EditorPanel
 	private JLabel			lbl_codice_cliente;
 	private JLabel			lbl_nome_cliente;
 	private JLabel			lbl_note;
-	private JScrollPane	scroll_pane_note;
 	private JTextArea		ta_note;
-	private JTextField	tf_codice_cliente; 
-	private JTextField	tf_nome_cliente;
+	private JTextField		tf_codice_cliente; 
+	private JTextField		tf_nome_cliente;
 
 	// ==========================================================================
 	
@@ -79,7 +78,6 @@ public class ClientePanel extends EditorPanel
 		
 		// aggiungo i gruppi verticali
 		sg = gl.createSequentialGroup();
-		GroupLayout.Alignment v_align = GroupLayout.Alignment.BASELINE;
 		
 		pg = gl.createParallelGroup();
 		pg.addComponent(p1);

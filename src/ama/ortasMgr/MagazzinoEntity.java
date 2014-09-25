@@ -11,10 +11,6 @@ public class MagazzinoEntity {
 		return this._m;
 	}
 	
-	public MagazzinoModel getModel() {
-		return this._m;
-	}
-	
 	public void setId(String value) {
 		this._m.id = value;
 	}

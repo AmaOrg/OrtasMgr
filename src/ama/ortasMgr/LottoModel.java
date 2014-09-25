@@ -1,5 +1,7 @@
 package ama.ortasMgr;
 
+import java.util.GregorianCalendar;
+
 public class LottoModel {
 	public String id;
 	public String codice;

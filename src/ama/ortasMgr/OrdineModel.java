@@ -1,5 +1,7 @@
 package ama.ortasMgr;
 
+import java.util.GregorianCalendar;
+
 public class OrdineModel {
 	public String id;
 	public String codice;

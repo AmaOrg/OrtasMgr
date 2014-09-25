@@ -1,12 +1,14 @@
 package ama.ortasMgr;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.SpringLayout;
 
+
+@SuppressWarnings("serial")
 public abstract class EditorPanel extends JPanel
 {
 	// GUI VARS
@@ -42,7 +44,6 @@ public abstract class EditorPanel extends JPanel
 
 		String east = SpringLayout.EAST;
 		String west = SpringLayout.WEST;
-		String north = SpringLayout.NORTH;
 		String south = SpringLayout.SOUTH;
 
 		SpringLayout sp = new SpringLayout();

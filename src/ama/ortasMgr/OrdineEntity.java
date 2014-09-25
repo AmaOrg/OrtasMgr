@@ -1,5 +1,7 @@
 package ama.ortasMgr;
 
+import java.util.GregorianCalendar;
+
 public class OrdineEntity {
 	private OrdineModel _m;
 	

@@ -3,6 +3,10 @@ package ama.ortasMgr;
 public class ProdottoEntity {
 	private ProdottoModel _m;
 	
+	public ProdottoEntity() { 
+		this._m = new ProdottoModel();
+	}
+	
 	public ProdottoEntity(ProdottoModel m) {
 		this._m = m;
 	}

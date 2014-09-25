@@ -1,13 +1,13 @@
 package ama.ortasMgr;
 
-public class StatoOrdineModelEntity {
+public class StatoOrdineEntity {
 	private StatoOrdineModel _m;
 	
-	public StatoOrdineModelEntity(StatoOrdineModelModel m) {
+	public StatoOrdineEntity(StatoOrdineModel m) {
 		this._m = m;
 	}
 	
-	public StatoOrdineModelModel getModel() {
+	public StatoOrdineModel getModel() {
 		return this._m;
 	}
 	

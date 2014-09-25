@@ -1,6 +1,7 @@
 package ama.ortasMgr;
 
 import java.awt.FlowLayout;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -9,6 +10,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+@SuppressWarnings("serial")
 public class ProdottoPanel extends JPanel
 {
 	// GUI VARS

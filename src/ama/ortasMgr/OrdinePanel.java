@@ -1,12 +1,13 @@
 package ama.ortasMgr;
 
-import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale; 
+
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class OrdinePanel extends EditorPanel
 {
 	// PRIVATE VARS
@@ -56,7 +57,7 @@ public class OrdinePanel extends EditorPanel
 		_start = calendar.getTime();
 		
 		SpinnerDateModel spdm;
-		spdm = new SpinnerDateModel(_start, null, null, calendar.DAY_OF_MONTH);
+		spdm = new SpinnerDateModel(_start, null, null, Calendar.DAY_OF_MONTH);
 		sp_data_ordine = new JSpinner(spdm);
 		
 		// Codice Ordine
@@ -519,7 +520,7 @@ public class OrdinePanel extends EditorPanel
 			p.setNome((String)row[1]);
 			
 			op.setProdotto(p);
-			op.setQta(Integer.parseInt(row[2]));
+			op.setQta((int)row[2]);
 			
 			value[r] = op;
 		}
@@ -543,10 +544,10 @@ public class OrdinePanel extends EditorPanel
 		}
 	}
 
-	public PrelievoMagazzinoEntity[] getPrelieviMagazzino() {
+	public PrelievoMagEntity[] getPrelieviMagazzino() {
 		return null;
 	}
-	public void setPrelieviMagazzino(PrelievoMagazzinoEntity[] value) {
+	public void setPrelieviMagazzino(PrelievoMagEntity[] value) {
 		
 	}
 	

@@ -3,6 +3,10 @@ package ama.ortasMgr;
 public class OrdineProdottoEntity {
 	private OrdineProdottoModel _m;
 	
+	public OrdineProdottoEntity() {
+		this._m = new OrdineProdottoModel();
+	}
+	
 	public OrdineProdottoEntity(OrdineProdottoModel m) {
 		this._m = m;
 	}

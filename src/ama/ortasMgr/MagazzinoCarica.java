@@ -1,12 +1,13 @@
 package ama.ortasMgr;
 
-import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale; 
+
 import javax.swing.*;
 
+@SuppressWarnings("serial")
 public class MagazzinoCarica extends EditorPanel
 {
 	// GUI VARS

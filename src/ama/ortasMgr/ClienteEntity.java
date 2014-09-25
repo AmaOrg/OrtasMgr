@@ -24,7 +24,7 @@ public class ClienteEntity {
 			// Errore
 		}
 		
-		if(value.length > 50)
+		if(value.length() > 50)
 		{
 			// Errore
 		}

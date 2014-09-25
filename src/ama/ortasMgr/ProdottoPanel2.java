@@ -1,13 +1,11 @@
 package ama.ortasMgr;
 
 
-import java.awt.Color;
+// import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
+
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -15,6 +13,7 @@ import javax.swing.JSpinner;
 import javax.swing.JTextField;
 import javax.swing.SpinnerNumberModel;
 
+@SuppressWarnings("serial")
 public class ProdottoPanel2 extends EditorPanel
 {
 	// GUI VARS
@@ -24,7 +23,6 @@ public class ProdottoPanel2 extends EditorPanel
 	private JLabel     lbl_codice;
 	private JLabel     lbl_nome;
 	private JLabel     lbl_giac;
-	private JLabel     lbl_prod_interna;
 	private JSpinner   sp_giac;
 	private JTextField tf_codice;
 	private JTextField tf_nome;
@@ -97,7 +95,6 @@ public class ProdottoPanel2 extends EditorPanel
 		// aggiungo i gruppi orizzontali
 		//
 		int CHAR_WIDTH = 11; 
-		int ps = GroupLayout.PREFERRED_SIZE;
 		
 		GroupLayout.SequentialGroup sg;
 		GroupLayout.ParallelGroup pg;
@@ -164,7 +161,6 @@ public class ProdottoPanel2 extends EditorPanel
 		//
 		
 		sg = gl.createSequentialGroup();
-		GroupLayout.Alignment v_align = GroupLayout.Alignment.BASELINE;
 		
 		pg = gl.createParallelGroup();
 		pg.addComponent(p1);
@@ -220,6 +216,7 @@ public class ProdottoPanel2 extends EditorPanel
 		*/
 	}
 
+	@SuppressWarnings("unused")
 	private class Btn_Salva_ActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			System.out.println("Ciao");

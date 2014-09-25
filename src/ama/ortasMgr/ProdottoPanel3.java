@@ -2,12 +2,11 @@ package ama.ortasMgr;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.FlowLayout;
 import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.SQLException;
+
 import javax.swing.GroupLayout;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -16,8 +15,8 @@ import javax.swing.SpinnerNumberModel;
 
 import java.sql.Statement;
 import java.sql.ResultSet;
-import java.sql.Connection;
 
+@SuppressWarnings("serial")
 public class ProdottoPanel3 extends EditorPanel
 {
 	// GUI VARS

@@ -1,5 +1,7 @@
 package ama.ortasMgr;
 
+import java.util.GregorianCalendar;
+
 public class SpedizioneModel {
 	public String id;
 	public String ldv; // lettera di vettura

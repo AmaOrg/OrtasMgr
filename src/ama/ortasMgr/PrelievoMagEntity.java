@@ -3,7 +3,7 @@ package ama.ortasMgr;
 public class PrelievoMagEntity {
 	private PrelievoMagModel _m;
 	
-	public PrelievoMagEntity(PrelievoModel m) {
+	public PrelievoMagEntity(PrelievoMagModel m) {
 		this._m = m;
 	}
 	

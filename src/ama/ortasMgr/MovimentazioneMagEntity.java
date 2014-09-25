@@ -1,5 +1,7 @@
 package ama.ortasMgr;
 
+import java.util.GregorianCalendar;
+
 public class MovimentazioneMagEntity {
 	private MovimentazioneMagModel _m;
 	
