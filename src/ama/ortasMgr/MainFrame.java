@@ -57,6 +57,8 @@ public class MainFrame extends JFrame
 		this.initGui_MenuBar_MenuMagazzino(menubar);
 		// Creo il Menu "Prodotti"
 		this.initGui_MenuBar_MenuProdotti(menubar);
+		// Creo il Menu "Cliente"
+		this.initGui_MenuBar_MenuCliente(menubar);
 		// Creo il Menu "Reports"
 		this.initGui_MenuBar_MenuReports(menubar);
 
@@ -170,6 +172,31 @@ public class MainFrame extends JFrame
 		Prodotti_Nuovo_ActionListener pnal = new Prodotti_Nuovo_ActionListener();
 		menuitem_prodotti_nuovo.addActionListener(pnal);
 	}
+	
+	private void initGui_MenuBar_MenuCliente(JMenuBar menubar) {
+		// Creo il menu "Cliente"
+		JMenu menu_cliente;
+
+		menu_cliente = new JMenu("Cliente");
+		menu_cliente.setMnemonic(KeyEvent.VK_C);
+
+		menubar.add(menu_cliente);
+
+		// Creo la voce "Cerca" del menu "Cliente"
+		JMenuItem menuitem_cliente_cerca;
+		menuitem_cliente_cerca = new JMenuItem("Cerca", KeyEvent.VK_C);
+
+		menu_cliente.add(menuitem_cliente_cerca);
+
+		// Creo la voce "Nuovo" del menu "Cliente"
+		JMenuItem menuitem_cliente_nuovo;
+		menuitem_cliente_nuovo = new JMenuItem("Nuovo", KeyEvent.VK_N);
+
+		menu_cliente.add(menuitem_cliente_nuovo);
+
+		Cliente_Nuovo_ActionListener cnal = new Cliente_Nuovo_ActionListener();
+		menuitem_cliente_nuovo.addActionListener(cnal);
+	}
 
 	private void initGui_MenuBar_MenuReports(JMenuBar menubar) {
 		// Creo il menu "Reports"
@@ -181,8 +208,7 @@ public class MainFrame extends JFrame
 		menubar.add(menu_reports);
 	}
 	
-	private class Sistema_Esci_ActionListener implements ActionListener
-	{
+	private class Sistema_Esci_ActionListener implements ActionListener {
 		public JFrame parent_frame;
 
 		public void chiediConfermaUscita() {
@@ -260,20 +286,19 @@ public class MainFrame extends JFrame
 		}
 	}
 
-	private class Prodotti_Nuovo_ActionListener implements ActionListener
-	{
+	private class Prodotti_Nuovo_ActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent ae) {
 			// creo la finestra tramite la quale inserire il nuovo prodotto
 			JFrame f = new JFrame();
 			f.setTitle("Anagrafica Prodotto (Nuovo)");
 			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			f.setSize(600, 200);
+			f.setSize(800, 300);
 			f.setLocationRelativeTo(null); // finestra nel centro schermo
 
 			// creo il pannello da inserire nella finestra
 			// ProdottoPanel p = new ProdottoPanel();
 			ProdottoPanel2 p = new ProdottoPanel2();
-
+	
 			f.add(p, BorderLayout.CENTER);
 			f.setVisible(true);
 		}
@@ -283,9 +308,9 @@ public class MainFrame extends JFrame
 		public void actionPerformed(ActionEvent ae) {
 		// creo la finestra tramite la quale inserire il nuovo prodotto
 		JFrame f = new JFrame();
-		f.setTitle("Prodotto (Nuovo)");
+		f.setTitle("Ordine (Nuovo)");
 		f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		f.setSize(800, 500);
+		f.setSize(1000, 420);
 		f.setLocationRelativeTo(null); // finestra nel centro schermo
 		
 		// creo il pannello da inserire nella finestra
@@ -311,6 +336,23 @@ public class MainFrame extends JFrame
 
 			frame.add(p, BorderLayout.CENTER);
 			frame.setVisible(true);
+		}
+	}
+	
+	private class Cliente_Nuovo_ActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ae) {
+			// creo la finestra tramite la quale inserire il nuovo cliente
+			JFrame f = new JFrame();
+			f.setTitle("Anagrafica Cliente (Nuovo)");
+			f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			f.setSize(600, 300);
+			f.setLocationRelativeTo(null); // finestra nel centro schermo
+
+			// creo il pannello da inserire nella finestra
+			ClientePanel p = new ClientePanel();
+
+			f.add(p, BorderLayout.CENTER);
+			f.setVisible(true);
 		}
 	}
 }

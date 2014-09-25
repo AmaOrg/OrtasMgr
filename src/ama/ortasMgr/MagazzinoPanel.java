@@ -323,7 +323,7 @@ public class MagazzinoPanel extends EditorPanel
 		y1.addComponent(sp_scad, ps, ps, ps);
 		
 	}
-
+	
 	// protected
 	
 	protected void initContentPanel(JPanel pnl_content) {
@@ -338,5 +338,96 @@ public class MagazzinoPanel extends EditorPanel
 	
 	public MagazzinoPanel() {
 		super();
+	}
+	
+	public void setData(GregorianCalendar value) {
+		this.sp_data.setValue(value);
+		
+		//Date d = value.getTime();
+		//this.sp_data.setValue(d);
+	}
+	public GregorianCalendar getData() {
+		GregorianCalendar value = (GregorianCalendar)this.sp_data.getValue();
+		return value;
+		
+		// GregorianCalendar value = new GregorianCalendar();
+		// Date d = (Date)this.sp_data.getValue();
+		// value.setTime(d);
+		// return value;
+	}
+	
+	public void setCodice(String value) {
+		this.tf_codice.setText(value);
+	}
+	public String getCodice() {
+		return this.tf_codice.getText();
+	}
+	
+	public String getNome() {
+		String value = this.tf_nome.getText();
+		return value;
+	}
+	public void setNome(String value) {
+		this.tf_nome.setText(value);
+	}
+
+	public String getNote() {
+		String value = this.ta_note.getText();
+		return value;
+	}
+	public void setNote(String value) {
+		this.ta_note.setText(value);
+	}
+
+	public String getLotto() {
+		String value = this.tf_lotto.getText();
+		return value;
+	}
+	public void setLotto(String value) {
+		this.tf_lotto.setText(value);
+	}
+	
+	public int getGiacAttuale() {
+		String str = this.tf_giac_att.getText();
+		int value = Integer.parseInt(str);
+		return value;
+	}
+	public void setGiacAttuale(int value) {
+		String str = Integer.toString(value);
+		this.tf_giac_att.setText(str);
+	}
+	
+	public int getGiacNuova() {
+		String str = this.tf_giac_nuova.getText();
+		int value = Integer.parseInt(str);
+		return value;
+	}
+	public void setGiacNuova(int value) {
+		String str = Integer.toString(value);
+		this.tf_giac_nuova.setText(str);
+	}
+	
+	public void setScadenza(GregorianCalendar value) {
+		this.sp_scad.setValue(value);
+		
+		//Date d = value.getTime();
+		//this.sp_scad.setValue(d);
+	}
+	public GregorianCalendar getScadenza() {
+		GregorianCalendar value = (GregorianCalendar)this.sp_scad.getValue();
+		return value;
+		
+		// GregorianCalendar value = new GregorianCalendar();
+		// Date d = (Date)this.sp_scad.getValue();
+		// value.setTime(d);
+		// return value;
+	}
+	
+	public int getQta() {
+		int value = (int)this.sp_qta.getValue();
+		return value;
+	}
+	public void setQta(int value) {
+		this.sp_qta.setValue(value);
 	}
 }

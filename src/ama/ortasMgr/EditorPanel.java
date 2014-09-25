@@ -25,9 +25,12 @@ public abstract class EditorPanel extends JPanel
 	// protected
 
 	protected EditorPanel() {
+		this.setOpaque(true);
+		this.setBackground(java.awt.Color.black);
+	
 		BorderLayout bl = new BorderLayout();
 		this.setLayout(bl);
-
+		
 		this.pnl_buttons = new JPanel();
 
 		this.btn_esci = new JButton("Esci");
